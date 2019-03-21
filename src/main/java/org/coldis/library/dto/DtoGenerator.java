@@ -309,7 +309,7 @@ public class DtoGenerator extends AbstractProcessor {
 			final TypeMirror attributeOriginalType = ((ExecutableType) attributeGetter.asType()).getReturnType();
 			// Gets the default attribute metadata.
 			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalType.toString(),
-					defaultAttrName, defaultAttrName, "", true);
+					defaultAttrName, defaultAttrName, "", false, true);
 			// DTOs in attribute hierarchy.
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType,
 					context, new HashMap<>());
@@ -331,6 +331,7 @@ public class DtoGenerator extends AbstractProcessor {
 				.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription()
 						: dtoAttributeAnno.description());
 				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
+				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
 				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
 			}
 		}
