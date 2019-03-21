@@ -53,6 +53,11 @@ public @interface DtoAttribute {
 	public String[] modifiers() default {};
 
 	/**
+	 * If attribute should be placed in constructor and have a setter.
+	 */
+	public boolean readOnly() default false;
+
+	/**
 	 * If attribute method should be used in comparison methods.
 	 */
 	public boolean usedInComparison() default true;
