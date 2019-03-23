@@ -47,7 +47,7 @@ public class DtoGenerator extends AbstractProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DtoGenerator.class);
 
 	/**
-	 * Gets a DTO template.
+	 * Gets a template.
 	 *
 	 * @param  velocityEngine  Velocity engine.
 	 * @param  resourcesFolder The resources folder to be used.
@@ -56,6 +56,9 @@ public class DtoGenerator extends AbstractProcessor {
 	 */
 	private Template getTemplate(final VelocityEngine velocityEngine, final String resourcesFolder,
 			final String templatePath) {
+		// Configures the resource loader to also look at the classpath.
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		// Velocity template.
 		Template velocityTemplate = null;
 		// Tries to get the template for the given path.
@@ -65,7 +68,6 @@ public class DtoGenerator extends AbstractProcessor {
 		// If the template cannot be retrieved
 		catch (final Exception exception) {
 			// Ignores it.
-			DtoGenerator.LOGGER.debug("DTO template not found locally. Searching the classpath next.");
 		}
 		// If the template has not been found yet.
 		if (velocityTemplate == null) {
@@ -84,17 +86,12 @@ public class DtoGenerator extends AbstractProcessor {
 	 * @throws IOException     If the class cannot be generated.
 	 */
 	private void generateDto(final TypeElement originalType, final DtoTypeMetadata dtoTypeMetadata) throws IOException {
-		// Velocity engine.
+		// Gets the velocity engine and initializes it.
 		final VelocityEngine velocityEngine = new VelocityEngine();
-		// Configures the resource loader to also look at the classpath.
-		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		// Initializes the engine.
 		velocityEngine.init();
-		// Creates a new velocity context.
+		// Creates a new velocity context and sets its variables.
 		final VelocityContext velocityContext = new VelocityContext();
-		// Sets the context values.
-		velocityContext.put("metadata", dtoTypeMetadata);
+		velocityContext.put("dto", dtoTypeMetadata);
 		velocityContext.put("newLine", "\r\n");
 		velocityContext.put("tab", "\t");
 		// Gets the template for the DTO.

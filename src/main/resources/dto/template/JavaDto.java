@@ -1,20 +1,20 @@
-package ${metadata.namespace};
+package ${dto.namespace};
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Arrays;
 
 /**
- * ${metadata.description}.
+ * ${dto.description}.
  */
-public class ${metadata.name} implements Serializable {
+public class ${dto.name} implements Serializable {
 
 	/**
 	 * Serial.
 	 */
-	private static final long serialVersionUID = ${metadata.namespace.hashCode()}${metadata.name.hashCode()}L;
+	private static final long serialVersionUID = ${dto.namespace.hashCode()}${dto.name.hashCode()}L;
 	
-#{foreach}(${attribute} in ${metadata.attributes})
+#{foreach}(${attribute} in ${dto.attributes})
 	/**
 	 * ${attribute.description}.
 	 */
@@ -25,32 +25,32 @@ public class ${metadata.name} implements Serializable {
 	/**
 	 * No arguments constructor.
 	 */
-	public ${metadata.name}() {
+	public ${dto.name}() {
 		super();
 	}
 
 	/**
 	 * Default constructor.
-#{foreach}(${attribute} in ${metadata.attributes})
+#{foreach}(${attribute} in ${dto.attributes})
  	 * @param ${attribute.name}
  	 *            ${attribute.description}.
 #{end}
 	 */
-	public ${metadata.name}(
-			#{set}($currentItemIdx = 0)#{foreach}(${attribute} in ${metadata.attributes})
+	public ${dto.name}(
+			#{set}($currentItemIdx = 0)#{foreach}(${attribute} in ${dto.attributes})
 #{if}(!${attribute.readOnly} && !${attribute.modifiers.contains("static")} && 
 		!${attribute.modifiers.contains("final")})#{if}(${currentItemIdx} > 0),
 			#{end}#{set}( $currentItemIdx = $currentItemIdx + 1 )${attribute.type} ${attribute.name}#{end}
 #{end}) {
 		super();
-#{foreach}(${attribute} in ${metadata.attributes})
+#{foreach}(${attribute} in ${dto.attributes})
 #{if}(!${attribute.modifiers.contains("static")} && 
 	!${attribute.modifiers.contains("final")})		this.${attribute.name} = ${attribute.name};
 #{end}
 #{end}
 	}
 
-#{foreach}( ${attribute} in ${metadata.attributes} )
+#{foreach}( ${attribute} in ${dto.attributes} )
 	/**
 	 * Gets the ${attribute.description}.
 	 * @return The ${attribute.description}.
@@ -79,14 +79,14 @@ public class ${metadata.name} implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Objects.hash(
-				#{set}($currentItemIdx = 0)#{foreach}(${attribute} in ${metadata.attributes})#{if}(${attribute.usedInComparison} && !${attribute.type.endsWith("[]")})
+				#{set}($currentItemIdx = 0)#{foreach}(${attribute} in ${dto.attributes})#{if}(${attribute.usedInComparison} && !${attribute.type.endsWith("[]")})
 #{if}(${currentItemIdx} > 0),
 				#{end}${attribute.name}#{set}($currentItemIdx = $currentItemIdx + 1)
 #{end}
 #{end}
 
 			);
-#{foreach}(${attribute} in ${metadata.attributes})#{if}(${attribute.usedInComparison} && ${attribute.type.endsWith("[]")})
+#{foreach}(${attribute} in ${dto.attributes})#{if}(${attribute.usedInComparison} && ${attribute.type.endsWith("[]")})
 		result = prime * result + Arrays.hashCode(${attribute.name});
 #{end}#{end}
 		return result;
@@ -106,8 +106,8 @@ public class ${metadata.name} implements Serializable {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final ${metadata.name} other = (${metadata.name}) obj;
-#{foreach}(${attribute} in ${metadata.attributes})#{if}(${attribute.usedInComparison})
+		final ${dto.name} other = (${dto.name}) obj;
+#{foreach}(${attribute} in ${dto.attributes})#{if}(${attribute.usedInComparison})
 		if (!#{if}(${attribute.type.endsWith("[]")}) Arrays#{else} Objects#{end}.equals(${attribute.name}, other.${attribute.name})) {
 			return false;
 		}
