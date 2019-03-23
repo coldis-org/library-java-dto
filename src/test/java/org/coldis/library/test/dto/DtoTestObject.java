@@ -75,11 +75,11 @@ public class DtoTestObject implements IdentifiedObject {
 	private Integer test9;
 
 	/**
-	 * @see IdentifiedObject.com.rebelbank.common.spring.model.generic.IdentifiedEntity#getId()
+	 * @see org.coldis.library.model.IdentifiedObject#getId()
 	 */
 	@Override
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 * @return The test1.
 	 */
 	public DtoTestObject2 getTest1() {
-		return test1;
+		return this.test1;
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 * @return The test2.
 	 */
 	public List<DtoTestObject2> getTest2() {
-		return test2;
+		return this.test2;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 */
 	@DtoAttribute(ignore = true)
 	public String getTest3() {
-		return test3;
+		return this.test3;
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 */
 	@DtoAttribute(type = "java.util.Map<String, Object>")
 	public DtoTestObject2 getTest4() {
-		return test4;
+		return this.test4;
 	}
 
 	/**
@@ -170,9 +170,9 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test5.
 	 */
-	@DtoAttribute(defaultValue = TEST_FINAL_ATTR_VALUE, modifiers = { "static", "final" })
+	@DtoAttribute(defaultValue = DtoTestObject.TEST_FINAL_ATTR_VALUE, modifiers = { "static", "final" })
 	public String getTest5() {
-		return test5;
+		return this.test5;
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 * @return The test6.
 	 */
 	public DtoTestObject2[] getTest6() {
-		return test6;
+		return this.test6;
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 * @return The test7.
 	 */
 	public int getTest7() {
-		return test7;
+		return this.test7;
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class DtoTestObject implements IdentifiedObject {
 	@JsonGetter(value = "test88")
 	@DtoAttribute(name = "test88")
 	public int[] getTest8() {
-		return test8;
+		return this.test8;
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 */
 	@DtoAttribute(usedInComparison = false)
 	public Integer getTest9() {
-		return test9;
+		return this.test9;
 	}
 
 	/**
