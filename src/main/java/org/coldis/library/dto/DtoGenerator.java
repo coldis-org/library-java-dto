@@ -31,6 +31,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.coldis.library.helper.ReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,12 +178,9 @@ public class DtoGenerator extends AbstractProcessor {
 							&& (!currentGetter.getModifiers().contains(Modifier.STATIC))
 							&& (currentGetter.getSimpleName().toString().startsWith("get")
 									|| currentGetter.getSimpleName().toString().startsWith("is"))) {
-						// If it is a boolean getter.
-						final Boolean booleanGetter = currentGetter.getSimpleName().toString().startsWith("is");
-						// Gets the default attribute name.
-						String attributeName = currentGetter.getSimpleName().toString();
-						attributeName = attributeName.substring(booleanGetter ? 2 : 3, booleanGetter ? 3 : 4)
-								.toLowerCase() + attributeName.substring(booleanGetter ? 3 : 4);
+						// Gets the attribute name.
+						final String attributeName = ReflectionHelper
+								.getAttributeName(currentGetter.getSimpleName().toString());
 						// If the attribute has not been added yet (for override attributes).
 						if (!alreadyAddedAttributes.contains(currentGetter.getSimpleName().toString())
 								&& (!"class".equals(attributeName))) {
