@@ -96,7 +96,8 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test1.
 	 */
-	public DtoTestObject2 getTest1() {
+	@JsonGetter
+	final public DtoTestObject2 getTest1() {
 		return this.test1;
 	}
 
