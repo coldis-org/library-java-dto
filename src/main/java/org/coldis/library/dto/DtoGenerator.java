@@ -303,8 +303,11 @@ public class DtoGenerator extends AbstractProcessor {
 		if ((dtoAttributeAnno == null) || ((dtoAttributeAnno != null) && !dtoAttributeAnno.ignore())) {
 			// Gets the attribute original type.
 			final TypeMirror attributeOriginalType = ((ExecutableType) attributeGetter.asType()).getReturnType();
+			final Integer attributeOriginalTypeNameStart = attributeOriginalType.toString().lastIndexOf(" ") + 1;
+			final String attributeOriginalTypeName = attributeOriginalType.toString()
+					.substring(attributeOriginalTypeNameStart);
 			// Gets the default attribute metadata.
-			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalType.toString(),
+			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName,
 					defaultAttrName, defaultAttrName, "", false, true);
 			// DTOs in attribute hierarchy.
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType,
