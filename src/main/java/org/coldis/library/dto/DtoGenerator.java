@@ -1,5 +1,7 @@
 package org.coldis.library.dto;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -24,8 +26,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.StandardLocation;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -38,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * DTO generator.
  */
-@SupportedSourceVersion(value = SourceVersion.RELEASE_10)
+@SupportedSourceVersion(value = SourceVersion.RELEASE_11)
 @SupportedAnnotationTypes(value = { "org.coldis.library.dto.DtoType", "org.coldis.library.dto.DtoTypes" })
 public class DtoGenerator extends AbstractProcessor {
 
@@ -46,35 +48,6 @@ public class DtoGenerator extends AbstractProcessor {
 	 * Logger.
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(DtoGenerator.class);
-
-	/**
-	 * Gets a template.
-	 *
-	 * @param  velocityEngine  Velocity engine.
-	 * @param  resourcesFolder The resources folder to be used.
-	 * @param  templatePath    The template path.
-	 * @return                 The velocity template.
-	 */
-	private Template getTemplate(final VelocityEngine velocityEngine, final String resourcesFolder,
-			final String templatePath) {
-		// Velocity template.
-		Template velocityTemplate = null;
-		// Tries to get the template for the given path.
-		try {
-			velocityTemplate = velocityEngine.getTemplate(resourcesFolder + templatePath);
-		}
-		// If the template cannot be retrieved
-		catch (final Exception exception) {
-			// Ignores it.
-		}
-		// If the template has not been found yet.
-		if (velocityTemplate == null) {
-			// Tries to get the template from the class path.
-			velocityTemplate = velocityEngine.getTemplate(templatePath);
-		}
-		// Returns the found template.
-		return velocityTemplate;
-	}
 
 	/**
 	 * Generates a DTO from a original type.
@@ -97,21 +70,17 @@ public class DtoGenerator extends AbstractProcessor {
 		velocityContext.put("newLine", "\r\n");
 		velocityContext.put("tab", "\t");
 		// Gets the template for the DTO.
-		final Template dtoTemplate = this.getTemplate(velocityEngine, dtoTypeMetadata.getResourcesPath(),
-				dtoTypeMetadata.getTemplatePath());
+		final Template dtoTemplate = velocityEngine.getTemplate(dtoTypeMetadata.getTemplatePath());
 		// Prepares the writer for the DTO.
-		final Boolean javaSource = dtoTypeMetadata.getTemplatePath().endsWith(".java");
-		final Writer dtoWriter = javaSource
-				? this.processingEnv.getFiler()
-						.createSourceFile(dtoTypeMetadata.getNamespace() + "." + dtoTypeMetadata.getName()).openWriter()
-						: this.processingEnv.getFiler()
-						.createResource(StandardLocation.SOURCE_PATH /* FIXME */, dtoTypeMetadata.getNamespace(),
-								dtoTypeMetadata.getName() + "." + dtoTypeMetadata.getFileExtension())
-						.openWriter();
-						// Writes the generated class code.
-						dtoTemplate.merge(velocityContext, dtoWriter);
-						// Closes the class writer.
-						dtoWriter.close();
+		final File dtoFile = new File(
+				dtoTypeMetadata.getTargetPath() + File.separator + dtoTypeMetadata.getFileNamespace(),
+				dtoTypeMetadata.getName() + "." + dtoTypeMetadata.getFileExtension());
+		FileUtils.forceMkdir(dtoFile.getParentFile());
+		final Writer dtoWriter = new FileWriter(dtoFile);
+		// Writes the generated class code.
+		dtoTemplate.merge(velocityContext, dtoWriter);
+		// Closes the class writer.
+		dtoWriter.close();
 	}
 
 	/**
@@ -159,7 +128,7 @@ public class DtoGenerator extends AbstractProcessor {
 	private static DtoTypeMetadata getDtoTypeMetadata(final TypeElement originalType, final DtoType dtoTypeAnno,
 			final Boolean alsoGetAttributesMetadata) {
 		// Gets the default type metadata.
-		final DtoTypeMetadata dtoTypeMetadata = new DtoTypeMetadata(dtoTypeAnno.context(), dtoTypeAnno.resourcesPath(),
+		final DtoTypeMetadata dtoTypeMetadata = new DtoTypeMetadata(dtoTypeAnno.context(), dtoTypeAnno.targetPath(),
 				dtoTypeAnno.templatePath(), dtoTypeAnno.fileExtension(), dtoTypeAnno.namespace(),
 				dtoTypeAnno.name().isEmpty() ? originalType.getSimpleName() + "Dto" : dtoTypeAnno.name(),
 						dtoTypeAnno.description(), null);

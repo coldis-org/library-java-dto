@@ -18,16 +18,9 @@ public class ${dto.name} implements Serializable {
 	/**
 	 * ${attribute.description}.
 	 */
-	private #{foreach}(${modifier} in ${attribute.modifiers})${modifier} #{end}${attribute.type} ${attribute.name}#{if}("$!attribute.defaultValue" != "") = ${attribute.defaultValue}#{end};
+	private #{foreach}(${modifier} in ${attribute.modifiers})${modifier} #{end}${attribute.type} ${attribute.name}#{if}("$!attribute.defaultValue" != "") = #{if}(${attribute.type.equals("java.lang.String")})"#{end}${attribute.defaultValue}#{if}(${attribute.type.equals("java.lang.String")})"#{end}#{end};
 
 #{end}
-
-	/**
-	 * No arguments constructor.
-	 */
-	public ${dto.name}() {
-		super();
-	}
 
 	/**
 	 * Default constructor.
@@ -42,13 +35,22 @@ public class ${dto.name} implements Serializable {
 		!${attribute.modifiers.contains("final")})#{if}(${currentItemIdx} > 0),
 			#{end}#{set}( $currentItemIdx = $currentItemIdx + 1 )${attribute.type} ${attribute.name}#{end}
 #{end}) {
-		super();
+		#{if}(${currentItemIdx} > 0)this#{else}super#{end}();
 #{foreach}(${attribute} in ${dto.attributes})
 #{if}(!${attribute.modifiers.contains("static")} && 
 	!${attribute.modifiers.contains("final")})		this.${attribute.name} = ${attribute.name};
 #{end}
 #{end}
 	}
+	
+#{if}(${currentItemIdx} > 0)	
+	/**
+	 * No arguments constructor.
+	 */
+	public ${dto.name}() {
+		super();
+	}
+#{end}
 
 #{foreach}( ${attribute} in ${dto.attributes} )
 	/**
