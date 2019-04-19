@@ -1,5 +1,6 @@
 package org.coldis.library.dto;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +24,12 @@ public class DtoTypeMetadata implements Serializable {
 	private String context;
 
 	/**
-	 * Resources path.
+	 * Target path.
 	 */
-	private String resourcesPath;
+	private String targetPath;
 
 	/**
-	 * Template relative path (from resources).
+	 * Template path.
 	 */
 	private String templatePath;
 
@@ -59,21 +60,22 @@ public class DtoTypeMetadata implements Serializable {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param context       Type context.
-	 * @param resourcesPath Resources path.
-	 * @param templatePath  Template relative path (from resources).
+	 * @param targetPath    Target path.
+	 * @param templatePath  Template path.
 	 * @param fileExtension The DTO file extension.
 	 * @param namespace     Type namespace.
 	 * @param name          Type name.
 	 * @param description   Type description.
 	 * @param attributes    Type attributes metadata.
 	 */
-	public DtoTypeMetadata(String context, String resourcesPath, String templatePath, String fileExtension,
-			String namespace, String name, String description, List<DtoAttributeMetadata> attributes) {
+	public DtoTypeMetadata(final String context, final String targetPath, final String templatePath,
+			final String fileExtension, final String namespace, final String name, final String description,
+			final List<DtoAttributeMetadata> attributes) {
 		super();
 		this.context = context;
-		this.resourcesPath = resourcesPath;
+		this.targetPath = targetPath;
 		this.templatePath = templatePath;
 		this.fileExtension = fileExtension;
 		this.namespace = namespace;
@@ -84,151 +86,160 @@ public class DtoTypeMetadata implements Serializable {
 
 	/**
 	 * Gets the context.
-	 * 
+	 *
 	 * @return The context.
 	 */
 	public String getContext() {
-		return context;
+		return this.context;
 	}
 
 	/**
 	 * Sets the context.
-	 * 
+	 *
 	 * @param context New context.
 	 */
-	public void setContext(String context) {
+	public void setContext(final String context) {
 		this.context = context;
 	}
 
 	/**
-	 * Gets the resourcesPath.
-	 * 
-	 * @return The resourcesPath.
+	 * Gets the targetPath.
+	 *
+	 * @return The targetPath.
 	 */
-	public String getResourcesPath() {
-		return resourcesPath;
+	public String getTargetPath() {
+		return this.targetPath;
 	}
 
 	/**
-	 * Sets the resourcesPath.
-	 * 
-	 * @param resourcesPath New resourcesPath.
+	 * Sets the targetPath.
+	 *
+	 * @param targetPath New targetPath.
 	 */
-	public void setResourcesPath(String resourcesPath) {
-		this.resourcesPath = resourcesPath;
+	public void setTargetPath(final String targetPath) {
+		this.targetPath = targetPath;
 	}
 
 	/**
 	 * Gets the templatePath.
-	 * 
+	 *
 	 * @return The templatePath.
 	 */
 	public String getTemplatePath() {
-		return templatePath;
+		return this.templatePath;
 	}
 
 	/**
 	 * Sets the templatePath.
-	 * 
+	 *
 	 * @param templatePath New templatePath.
 	 */
-	public void setTemplatePath(String templatePath) {
+	public void setTemplatePath(final String templatePath) {
 		this.templatePath = templatePath;
 	}
 
 	/**
 	 * Gets the fileExtension.
-	 * 
+	 *
 	 * @return The fileExtension.
 	 */
 	public String getFileExtension() {
-		return fileExtension;
+		return this.fileExtension;
 	}
 
 	/**
 	 * Sets the fileExtension.
-	 * 
+	 *
 	 * @param fileExtension New fileExtension.
 	 */
-	public void setFileExtension(String fileExtension) {
+	public void setFileExtension(final String fileExtension) {
 		this.fileExtension = fileExtension;
 	}
 
 	/**
 	 * Gets the namespace.
-	 * 
+	 *
 	 * @return The namespace.
 	 */
 	public String getNamespace() {
-		return namespace;
+		return this.namespace;
 	}
 
 	/**
 	 * Sets the namespace.
-	 * 
+	 *
 	 * @param namespace New namespace.
 	 */
-	public void setNamespace(String namespace) {
+	public void setNamespace(final String namespace) {
 		this.namespace = namespace;
 	}
 
 	/**
+	 * Gets the file namespace.
+	 *
+	 * @return The file namespace.
+	 */
+	public String getFileNamespace() {
+		return this.namespace.replace(".", File.separator);
+	}
+
+	/**
 	 * Gets the name.
-	 * 
+	 *
 	 * @return The name.
 	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
 	 * Sets the name.
-	 * 
+	 *
 	 * @param name New name.
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
 	/**
 	 * Gets the description.
-	 * 
+	 *
 	 * @return The description.
 	 */
 	public String getDescription() {
-		return StringUtils.isEmpty(description) ? getName() : description;
+		return StringUtils.isEmpty(this.description) ? this.getName() : this.description;
 	}
 
 	/**
 	 * Sets the description.
-	 * 
+	 *
 	 * @param description New description.
 	 */
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
 	/**
 	 * Gets the attributes.
-	 * 
+	 *
 	 * @return The attributes.
 	 */
 	public List<DtoAttributeMetadata> getAttributes() {
 		// If list is not initialized.
-		if (attributes == null) {
+		if (this.attributes == null) {
 			// Initializes it as an empty list.
-			attributes = new ArrayList<>();
+			this.attributes = new ArrayList<>();
 		}
 		// Returns the list.
-		return attributes;
+		return this.attributes;
 	}
 
 	/**
 	 * Sets the attributes.
-	 * 
+	 *
 	 * @param attributes New attributes.
 	 */
-	public void setAttributes(List<DtoAttributeMetadata> attributes) {
+	public void setAttributes(final List<DtoAttributeMetadata> attributes) {
 		this.attributes = attributes;
 	}
 
@@ -237,15 +248,15 @@ public class DtoTypeMetadata implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(attributes, context, description, fileExtension, name, namespace, resourcesPath,
-				templatePath);
+		return Objects.hash(this.attributes, this.context, this.description, this.fileExtension, this.name,
+				this.namespace, this.targetPath, this.templatePath);
 	}
 
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -255,12 +266,12 @@ public class DtoTypeMetadata implements Serializable {
 		if (!(obj instanceof DtoTypeMetadata)) {
 			return false;
 		}
-		DtoTypeMetadata other = (DtoTypeMetadata) obj;
-		return Objects.equals(attributes, other.attributes) && Objects.equals(context, other.context)
-				&& Objects.equals(description, other.description) && Objects.equals(fileExtension, other.fileExtension)
-				&& Objects.equals(name, other.name) && Objects.equals(namespace, other.namespace)
-				&& Objects.equals(resourcesPath, other.resourcesPath)
-				&& Objects.equals(templatePath, other.templatePath);
+		final DtoTypeMetadata other = (DtoTypeMetadata) obj;
+		return Objects.equals(this.attributes, other.attributes) && Objects.equals(this.context, other.context)
+				&& Objects.equals(this.description, other.description)
+				&& Objects.equals(this.fileExtension, other.fileExtension) && Objects.equals(this.name, other.name)
+				&& Objects.equals(this.namespace, other.namespace) && Objects.equals(this.targetPath, other.targetPath)
+				&& Objects.equals(this.templatePath, other.templatePath);
 	}
 
 }
