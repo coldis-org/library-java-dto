@@ -12,7 +12,7 @@ public class DtoTestObject2Dto implements Serializable {
 	/**
 	 * Serial.
 	 */
-	private static final long serialVersionUID = 7761103651922639325L;
+	private static final long serialVersionUID = 1922639325L;
 	
 	/**
 	 * id.
