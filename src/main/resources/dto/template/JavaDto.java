@@ -12,7 +12,7 @@ public class ${dto.name} implements Serializable {
 	/**
 	 * Serial.
 	 */
-	private static final long serialVersionUID = ${dto.namespace.hashCode()}${dto.name.hashCode()}L;
+	private static final long serialVersionUID = ${dto.name.hashCode()}L;
 	
 #{foreach}(${attribute} in ${dto.attributes})
 	/**
