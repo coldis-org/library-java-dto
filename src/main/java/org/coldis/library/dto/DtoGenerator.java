@@ -69,6 +69,7 @@ public class DtoGenerator extends AbstractProcessor {
 		velocityContext.put("dto", dtoTypeMetadata);
 		velocityContext.put("newLine", "\r\n");
 		velocityContext.put("tab", "\t");
+		velocityContext.put("h", "#");
 		// Gets the template for the DTO.
 		final Template dtoTemplate = velocityEngine.getTemplate(dtoTypeMetadata.getTemplatePath());
 		// Prepares the writer for the DTO.
@@ -163,7 +164,7 @@ public class DtoGenerator extends AbstractProcessor {
 								dtoTypeMetadata.getAttributes().add(dtoAttributeMetadata);
 							}
 							// Adds the attribute to the already added list.
-							alreadyAddedAttributes.add(currentGetter.getSimpleName().toString());
+							alreadyAddedAttributes.add(currentGetter.toString());
 						}
 					}
 				}
