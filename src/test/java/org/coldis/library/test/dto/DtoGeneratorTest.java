@@ -8,11 +8,8 @@ import org.coldis.library.test.dto.dto.DtoTestObjectDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.annotation.JsonFormat.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * DTO generator test.
@@ -20,19 +17,22 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class DtoGeneratorTest {
 
 	/**
-	 * Simples JSON object test data.
+	 * Test data.
 	 */
-	private static final DtoTestObjectDto[] TEST_DATA = { new DtoTestObjectDto(10L, new DtoTestObject2Dto(1L, "test1"),
-			List.of(new DtoTestObject2Dto(2L, "test2"), new DtoTestObject2Dto(3L, "test3")),
-			Map.of("id", 4L, "test", "test4"),
-			new DtoTestObject2Dto[] { new DtoTestObject2Dto(5L, "test5"), new DtoTestObject2Dto(6L, "test6") }, 1,
-			new int[] { 2, 3, 4 }, 5) };
+	private static final DtoTestObjectDto[] TEST_DATA = {
+					new DtoTestObjectDto().withId(10L).withTest1(new DtoTestObject2Dto().withId(1L).withTest("test1"))
+					.withTest2(List.of(new DtoTestObject2Dto().withId(2L).withTest("test2"),
+							new DtoTestObject2Dto().withId(3L).withTest("test3")))
+					.withTest4(Map.of("id", 4L, "test", "test4"))
+					.withTest6(new DtoTestObject2Dto[] { new DtoTestObject2Dto().withId(5L).withTest("test5"),
+									new DtoTestObject2Dto().withId(6L).withTest("test6") })
+					.withTest7(7).withTest88(new int[] { 2, 3, 4 }).withTest9(9) };
 
 	/**
 	 * Object mapper.
 	 */
-	private ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-			false);
+	private final ObjectMapper objectMapper = new ObjectMapper()
+			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	/**
 	 * Tests the DTO creation.
@@ -42,10 +42,11 @@ public class DtoGeneratorTest {
 	@Test
 	public void testDtoCreation() throws Exception {
 		// For each test data.
-		for (DtoTestObjectDto originalDto : TEST_DATA) {
+		for (final DtoTestObjectDto originalDto : DtoGeneratorTest.TEST_DATA) {
 			// Converts the DTO to the original object and back.
-			DtoTestObject originalObject = objectMapper.convertValue(originalDto, DtoTestObject.class);
-			DtoTestObjectDto reconvertedDto = objectMapper.convertValue(originalObject, DtoTestObjectDto.class);
+			final DtoTestObject originalObject = this.objectMapper.convertValue(originalDto, DtoTestObject.class);
+			final DtoTestObjectDto reconvertedDto = this.objectMapper.convertValue(originalObject,
+					DtoTestObjectDto.class);
 			// The DTO should remain the same.
 			Assertions.assertEquals(originalDto, reconvertedDto);
 			// Asserts that the attribute not used in comparison is the same and it does not
