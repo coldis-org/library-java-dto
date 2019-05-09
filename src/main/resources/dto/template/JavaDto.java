@@ -23,34 +23,11 @@ public class ${dto.name} implements Serializable {
 #{end}
 
 	/**
-	 * Default constructor.
-#{foreach}(${attribute} in ${dto.attributes})
- 	 * @param ${attribute.name}
- 	 *            ${attribute.description}.
-#{end}
-	 */
-	public ${dto.name}(
-			#{set}($currentItemIdx = 0)#{foreach}(${attribute} in ${dto.attributes})
-#{if}(!${attribute.readOnly} && !${attribute.modifiers.contains("static")} && 
-		!${attribute.modifiers.contains("final")})#{if}(${currentItemIdx} > 0),
-			#{end}#{set}( $currentItemIdx = $currentItemIdx + 1 )${attribute.type} ${attribute.name}#{end}
-#{end}) {
-		#{if}(${currentItemIdx} > 0)this#{else}super#{end}();
-#{foreach}(${attribute} in ${dto.attributes})
-#{if}(!${attribute.modifiers.contains("static")} && 
-	!${attribute.modifiers.contains("final")})		this.${attribute.name} = ${attribute.name};
-#{end}
-#{end}
-	}
-	
-#{if}(${currentItemIdx} > 0)	
-	/**
 	 * No arguments constructor.
 	 */
 	public ${dto.name}() {
 		super();
 	}
-#{end}
 
 #{foreach}( ${attribute} in ${dto.attributes} )
 	/**
@@ -69,6 +46,18 @@ public class ${dto.name} implements Serializable {
 	 */
 	public#{if}(${attribute.modifiers.contains("static")}) static#{end} void set${attribute.capitalizedName}(final ${attribute.type} ${attribute.name}) {
 		this.${attribute.name} = ${attribute.name};
+	}
+	
+	/**
+	 * Sets the ${attribute.description} and returns the updated object.
+	 *
+	 * @param ${attribute.name}
+	 *            The ${attribute.description}.
+	 * @return The updated object.
+	 */
+	public ${dto.name} with${attribute.capitalizedName}(final ${attribute.type} ${attribute.name}) {
+		this.set${attribute.capitalizedName}(${attribute.name});
+		return this;
 	}
 #{end}
 #{end}
