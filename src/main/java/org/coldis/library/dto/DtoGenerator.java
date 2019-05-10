@@ -27,6 +27,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -149,22 +150,25 @@ public class DtoGenerator extends AbstractProcessor {
 							&& (!currentGetter.getModifiers().contains(Modifier.STATIC))
 							&& (currentGetter.getSimpleName().toString().startsWith("get")
 									|| currentGetter.getSimpleName().toString().startsWith("is"))) {
-						// Gets the attribute name.
-						final String attributeName = ReflectionHelper
-								.getAttributeName(currentGetter.getSimpleName().toString());
-						// If the attribute has not been added yet (for override attributes).
-						if (!alreadyAddedAttributes.contains(currentGetter.getSimpleName().toString())
-								&& (!"class".equals(attributeName))) {
-							// Gets the attribute metadata.
-							final DtoAttributeMetadata dtoAttributeMetadata = DtoGenerator.getDtoAttributeMetadata(
-									dtoTypeMetadata.getContext(), currentGetter, attributeName);
-							// If the attribute metadata is retrieved.
-							if (dtoAttributeMetadata != null) {
-								// Adds the DTO attribute for later conversion.
-								dtoTypeMetadata.getAttributes().add(dtoAttributeMetadata);
+						// Only proceed if it is a getter (no arguments).
+						if (CollectionUtils.isEmpty(((ExecutableType) currentGetter.asType()).getParameterTypes())) {
+							// Gets the attribute name.
+							final String attributeName = ReflectionHelper
+									.getAttributeName(currentGetter.getSimpleName().toString());
+							// If the attribute has not been added yet (for override attributes).
+							if (!alreadyAddedAttributes.contains(currentGetter.toString())
+									&& (!"class".equals(attributeName))) {
+								// Gets the attribute metadata.
+								final DtoAttributeMetadata dtoAttributeMetadata = DtoGenerator.getDtoAttributeMetadata(
+										dtoTypeMetadata.getContext(), currentGetter, attributeName);
+								// If the attribute metadata is retrieved.
+								if (dtoAttributeMetadata != null) {
+									// Adds the DTO attribute for later conversion.
+									dtoTypeMetadata.getAttributes().add(dtoAttributeMetadata);
+								}
+								// Adds the attribute to the already added list.
+								alreadyAddedAttributes.add(currentGetter.toString());
 							}
-							// Adds the attribute to the already added list.
-							alreadyAddedAttributes.add(currentGetter.toString());
 						}
 					}
 				}
