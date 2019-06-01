@@ -6,7 +6,8 @@ import org.coldis.library.model.IdentifiedObject;
 /**
  * DTO test object.
  */
-@DtoType(targetPath = "src/test/java", namespace = "org.coldis.library.test.dto.dto")
+@DtoType(targetPath = "src/test/java",
+namespace = "org.coldis.library.test.dto.dto")
 public class DtoTestObject2 implements IdentifiedObject {
 
 	/**

@@ -40,7 +40,13 @@ public @interface DtoAttribute {
 	 * DTO attribute type. By default, the original class (only for Java) or the
 	 * compatible DTO class is used.
 	 */
-	public String type() default "";
+	public Class<?> type() default void.class;
+
+	/**
+	 * DTO attribute type name. Type may also be defined by name. Only one of type
+	 * and type name should be used.
+	 */
+	public String typeName() default "";
 
 	/**
 	 * DTO attribute default value.

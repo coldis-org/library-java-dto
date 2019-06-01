@@ -152,7 +152,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test4.
 	 */
-	@DtoAttribute(type = "java.util.Map<String, Object>")
+	@DtoAttribute(typeName = "java.util.Map<String, Object>")
 	public DtoTestObject2 getTest4() {
 		return this.test4;
 	}
@@ -227,7 +227,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 * @return The test8.
 	 */
 	@JsonGetter(value = "test88")
-	@DtoAttribute(name = "test88")
+	@DtoAttribute(name = "test88", type = Integer.class)
 	public int[] getTest8() {
 		return this.test8;
 	}

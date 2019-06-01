@@ -52,7 +52,7 @@ public class DtoTestObjectDto implements Serializable {
 	/**
 	 * test8.
 	 */
-	private int[] test88;
+	private java.lang.Integer test88;
 
 	/**
 	 * test9.
@@ -246,7 +246,7 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test8.
 	 * @return The test8.
 	 */
-	public int[] getTest88() {
+	public java.lang.Integer getTest88() {
 		return test88;
 	}
 	/**
@@ -255,7 +255,7 @@ public class DtoTestObjectDto implements Serializable {
 	 * @param test88
 	 *            The test8.
 	 */
-	public void setTest88(final int[] test88) {
+	public void setTest88(final java.lang.Integer test88) {
 		this.test88 = test88;
 	}
 	
@@ -266,7 +266,7 @@ public class DtoTestObjectDto implements Serializable {
 	 *            The test8.
 	 * @return The updated object.
 	 */
-	public DtoTestObjectDto withTest88(final int[] test88) {
+	public DtoTestObjectDto withTest88(final java.lang.Integer test88) {
 		this.setTest88(test88);
 		return this;
 	}
@@ -312,10 +312,10 @@ public class DtoTestObjectDto implements Serializable {
 				test2,
 				test4,
 				test5,
-				test7
+				test7,
+				test88
 			);
 		result = prime * result + Arrays.hashCode(test6);
-		result = prime * result + Arrays.hashCode(test88);
 		return result;
 	}
 	
@@ -355,7 +355,7 @@ public class DtoTestObjectDto implements Serializable {
 		if (! Objects.equals(test7, other.test7)) {
 			return false;
 		}
-		if (! Arrays.equals(test88, other.test88)) {
+		if (! Objects.equals(test88, other.test88)) {
 			return false;
 		}
 		return true;

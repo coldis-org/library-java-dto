@@ -24,6 +24,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 
@@ -51,38 +52,144 @@ public class DtoGenerator extends AbstractProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DtoGenerator.class);
 
 	/**
-	 * Generates a DTO from a original type.
+	 * Gets the DTO attribute metadata from an attribute getter and a context.
 	 *
-	 * @param  originalType    Original type information.
-	 * @param  dtoTypeMetadata DTO type metadata.
-	 * @throws IOException     If the class cannot be generated.
+	 * @param  attributeGetter Attribute getter.
+	 * @param  context         DTO context.
+	 * @return                 The DTO attribute metadata from an attribute getter
+	 *                         and a context.
 	 */
-	private void generateDto(final TypeElement originalType, final DtoTypeMetadata dtoTypeMetadata) throws IOException {
-		// Gets the velocity engine.
-		final VelocityEngine velocityEngine = new VelocityEngine();
-		// Configures the resource loader to also look at the classpath.
-		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		// Initializes the velocity engine.
-		velocityEngine.init();
-		// Creates a new velocity context and sets its variables.
-		final VelocityContext velocityContext = new VelocityContext();
-		velocityContext.put("dto", dtoTypeMetadata);
-		velocityContext.put("newLine", "\r\n");
-		velocityContext.put("tab", "\t");
-		velocityContext.put("h", "#");
-		// Gets the template for the DTO.
-		final Template dtoTemplate = velocityEngine.getTemplate(dtoTypeMetadata.getTemplatePath());
-		// Prepares the writer for the DTO.
-		final File dtoFile = new File(
-				dtoTypeMetadata.getTargetPath() + File.separator + dtoTypeMetadata.getFileNamespace(),
-				dtoTypeMetadata.getName() + "." + dtoTypeMetadata.getFileExtension());
-		FileUtils.forceMkdir(dtoFile.getParentFile());
-		final Writer dtoWriter = new FileWriter(dtoFile);
-		// Writes the generated class code.
-		dtoTemplate.merge(velocityContext, dtoWriter);
-		// Closes the class writer.
-		dtoWriter.close();
+	private static DtoAttribute getDtoAttributeAnno(final Element attributeGetter, final String context) {
+		// Gets DTO attribute metadata annotation.
+		DtoAttribute dtoAttributeAnno = attributeGetter.getAnnotation(DtoAttribute.class);
+		// If the DTO attribute annotation does not match the DTO context.
+		if ((dtoAttributeAnno == null) || !dtoAttributeAnno.context().equals(context)) {
+			// Re-sets the DTO attribute annotation.
+			dtoAttributeAnno = null;
+			// Gets DTO attributes metadata annotation.
+			final DtoAttributes dtoAttributesAnno = attributeGetter.getAnnotation(DtoAttributes.class);
+			// If there is a DTO attributes annotation.
+			if (dtoAttributesAnno != null) {
+				// For each DTO attribute metadata annotation.
+				for (final DtoAttribute currentDtoAttributeAnno : dtoAttributesAnno.attributes()) {
+					// If the current DTO attribute annotation matches the DTO context.
+					if (currentDtoAttributeAnno.context().equals(context)) {
+						// Updates the DTO attribute metadata annotation.
+						dtoAttributeAnno = currentDtoAttributeAnno;
+					}
+				}
+			}
+		}
+		// Returns the attribute metadata.
+		return dtoAttributeAnno;
+	}
+
+	/**
+	 * Gets the DTO types in hierarchy recursively.
+	 *
+	 * @param  type                The type to get the DTOs type recursively.
+	 * @param  context             The DTO generation context.
+	 * @param  dtoTypesInHierarchy The map with already found DTO types in
+	 *                                 hierarchy.
+	 * @return                     The DTO types in hierarchy recursively.
+	 */
+	public static Map<String, String> getDtoTypesInHierarchy(final TypeMirror type, final String context,
+			final Map<String, String> dtoTypesInHierarchy) {
+		// If the type is a array of a declared type.
+		final Boolean isDeclaredArrayType = (type instanceof ArrayType)
+				&& (((ArrayType) type).getComponentType() instanceof DeclaredType);
+		// Only if it is a declared type or an array of.
+		if ((type instanceof DeclaredType) || isDeclaredArrayType) {
+			// Gets the declared type and type element.
+			final DeclaredType declaredType = isDeclaredArrayType
+					? ((DeclaredType) ((ArrayType) type).getComponentType())
+							: ((DeclaredType) type);
+					final TypeElement currentTypeElement = (TypeElement) declaredType.asElement();
+					// Gets the DTO type metadata for a given context.
+					final DtoType dtoAttributeTypeAnno = DtoGenerator.getDtoTypeAnno(currentTypeElement, context);
+					// If the attribute type should also be a DTO.
+					if (dtoAttributeTypeAnno != null) {
+						// Gets the attribute type metadata.
+						final DtoTypeMetadata dtoAttributeTypeMetadata = DtoGenerator.getDtoTypeMetadata(currentTypeElement,
+								dtoAttributeTypeAnno, false);
+						// Adds the DTO type to the map.
+						dtoTypesInHierarchy.put(currentTypeElement.getQualifiedName().toString(),
+								dtoAttributeTypeMetadata.getNamespace() + "." + dtoAttributeTypeMetadata.getName());
+					}
+					// For each type parameter of the current type.
+					if (declaredType.getTypeArguments() != null) {
+						for (final TypeMirror currentTypeArgument : declaredType.getTypeArguments()) {
+							// Gets the DTO types in hierarchy recursively.
+							DtoGenerator.getDtoTypesInHierarchy(currentTypeArgument, context, dtoTypesInHierarchy);
+						}
+					}
+		}
+		// Returns the updated DTO types in hierarchy.
+		return dtoTypesInHierarchy;
+	}
+
+	/**
+	 * Gets the DTO attribute metadata.
+	 *
+	 * @param  context         The DTO context.
+	 * @param  attributeGetter The attribute getter.
+	 * @param  defaultAttrName The default attribute name.
+	 * @return                 The DTO attribute metadata.
+	 */
+	private static DtoAttributeMetadata getDtoAttributeMetadata(final String context, final Element attributeGetter,
+			final String defaultAttrName) {
+		// Gets the default attribute metadata.
+		DtoAttributeMetadata dtoAttributeMetadata = null;
+		// Gets the DTO attribute metadata annotation.
+		final DtoAttribute dtoAttributeAnno = DtoGenerator.getDtoAttributeAnno(attributeGetter, context);
+		// If the attribute should not be ignored.
+		if ((dtoAttributeAnno == null) || ((dtoAttributeAnno != null) && !dtoAttributeAnno.ignore())) {
+			// Gets the attribute original type.
+			final TypeMirror attributeOriginalType = ((ExecutableType) attributeGetter.asType()).getReturnType();
+			final Integer attributeOriginalTypeNameStart = attributeOriginalType.toString().lastIndexOf(" ") + 1;
+			final String attributeOriginalTypeName = attributeOriginalType.toString()
+					.substring(attributeOriginalTypeNameStart);
+			// DTOs in attribute hierarchy.
+			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType,
+					context, new HashMap<>());
+			// Gets the default attribute metadata.
+			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName,
+					defaultAttrName, defaultAttrName, "", false, true);
+			// If the attribute metadata annotation is present.
+			if (dtoAttributeAnno != null) {
+				// Gets the attribute type value.
+				TypeMirror dtoAttributeTypeValue = null;
+				try {
+					dtoAttributeAnno.type();
+				}
+				catch (final MirroredTypeException exception) {
+					dtoAttributeTypeValue = exception.getTypeMirror();
+				}
+				// Updates the DTO attribute metadata from the annotation information.
+				dtoAttributeMetadata.setModifiers(Arrays.asList(dtoAttributeAnno.modifiers()));
+				dtoAttributeMetadata.setType(dtoAttributeAnno.typeName().isEmpty() ? dtoAttributeMetadata.getType()
+						: dtoAttributeAnno.typeName());
+				dtoAttributeMetadata
+				.setType(dtoAttributeTypeValue.toString().equals("void") ? dtoAttributeMetadata.getType()
+						: dtoAttributeTypeValue.toString());
+				dtoAttributeMetadata.setName(
+						dtoAttributeAnno.name().isEmpty() ? dtoAttributeMetadata.getName() : dtoAttributeAnno.name());
+				dtoAttributeMetadata
+				.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription()
+						: dtoAttributeAnno.description());
+				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
+				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
+				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
+			}
+			// For each other DTO in the hierarchy.
+			for (final Entry<String, String> dtoTypeInAttrHier : dtoTypesInAttrHier.entrySet()) {
+				// Replaces the original attribute type for the correspondent DTO type.
+				dtoAttributeMetadata.setType(dtoAttributeMetadata.getType().replaceAll(dtoTypeInAttrHier.getKey(),
+						dtoTypeInAttrHier.getValue()));
+			}
+		}
+		// Returns the attribute metadata.
+		return dtoAttributeMetadata;
 	}
 
 	/**
@@ -183,133 +290,38 @@ public class DtoGenerator extends AbstractProcessor {
 	}
 
 	/**
-	 * Gets the DTO attribute metadata from an attribute getter and a context.
+	 * Generates a DTO from a original type.
 	 *
-	 * @param  attributeGetter Attribute getter.
-	 * @param  context         DTO context.
-	 * @return                 The DTO attribute metadata from an attribute getter
-	 *                         and a context.
+	 * @param  originalType    Original type information.
+	 * @param  dtoTypeMetadata DTO type metadata.
+	 * @throws IOException     If the class cannot be generated.
 	 */
-	private static DtoAttribute getDtoAttributeAnno(final Element attributeGetter, final String context) {
-		// Gets DTO attribute metadata annotation.
-		DtoAttribute dtoAttributeAnno = attributeGetter.getAnnotation(DtoAttribute.class);
-		// If the DTO attribute annotation does not match the DTO context.
-		if ((dtoAttributeAnno == null) || !dtoAttributeAnno.context().equals(context)) {
-			// Re-sets the DTO attribute annotation.
-			dtoAttributeAnno = null;
-			// Gets DTO attributes metadata annotation.
-			final DtoAttributes dtoAttributesAnno = attributeGetter.getAnnotation(DtoAttributes.class);
-			// If there is a DTO attributes annotation.
-			if (dtoAttributesAnno != null) {
-				// For each DTO attribute metadata annotation.
-				for (final DtoAttribute currentDtoAttributeAnno : dtoAttributesAnno.attributes()) {
-					// If the current DTO attribute annotation matches the DTO context.
-					if (currentDtoAttributeAnno.context().equals(context)) {
-						// Updates the DTO attribute metadata annotation.
-						dtoAttributeAnno = currentDtoAttributeAnno;
-					}
-				}
-			}
-		}
-		// Returns the attribute metadata.
-		return dtoAttributeAnno;
-	}
-
-	/**
-	 * Gets the DTO types in hierarchy recursively.
-	 *
-	 * @param  type                The type to get the DTOs type recursively.
-	 * @param  context             The DTO generation context.
-	 * @param  dtoTypesInHierarchy The map with already found DTO types in
-	 *                                 hierarchy.
-	 * @return                     The DTO types in hierarchy recursively.
-	 */
-	public static Map<String, String> getDtoTypesInHierarchy(final TypeMirror type, final String context,
-			final Map<String, String> dtoTypesInHierarchy) {
-		// If the type is a array of a declared type.
-		final Boolean isDeclaredArrayType = (type instanceof ArrayType)
-				&& (((ArrayType) type).getComponentType() instanceof DeclaredType);
-		// Only if it is a declared type or an array of.
-		if ((type instanceof DeclaredType) || isDeclaredArrayType) {
-			// Gets the declared type and type element.
-			final DeclaredType declaredType = isDeclaredArrayType
-					? ((DeclaredType) ((ArrayType) type).getComponentType())
-							: ((DeclaredType) type);
-					final TypeElement currentTypeElement = (TypeElement) declaredType.asElement();
-					// Gets the DTO type metadata for a given context.
-					final DtoType dtoAttributeTypeAnno = DtoGenerator.getDtoTypeAnno(currentTypeElement, context);
-					// If the attribute type should also be a DTO.
-					if (dtoAttributeTypeAnno != null) {
-						// Gets the attribute type metadata.
-						final DtoTypeMetadata dtoAttributeTypeMetadata = DtoGenerator.getDtoTypeMetadata(currentTypeElement,
-								dtoAttributeTypeAnno, false);
-						// Adds the DTO type to the map.
-						dtoTypesInHierarchy.put(currentTypeElement.getQualifiedName().toString(),
-								dtoAttributeTypeMetadata.getNamespace() + "." + dtoAttributeTypeMetadata.getName());
-					}
-					// For each type parameter of the current type.
-					if (declaredType.getTypeArguments() != null) {
-						for (final TypeMirror currentTypeArgument : declaredType.getTypeArguments()) {
-							// Gets the DTO types in hierarchy recursively.
-							DtoGenerator.getDtoTypesInHierarchy(currentTypeArgument, context, dtoTypesInHierarchy);
-						}
-					}
-		}
-		// Returns the updated DTO types in hierarchy.
-		return dtoTypesInHierarchy;
-	}
-
-	/**
-	 * Gets the DTO attribute metadata.
-	 *
-	 * @param  context         The DTO context.
-	 * @param  attributeGetter The attribute getter.
-	 * @param  defaultAttrName The default attribute name.
-	 * @return                 The DTO attribute metadata.
-	 */
-	private static DtoAttributeMetadata getDtoAttributeMetadata(final String context, final Element attributeGetter,
-			final String defaultAttrName) {
-		// Gets the default attribute metadata.
-		DtoAttributeMetadata dtoAttributeMetadata = null;
-		// Gets the DTO attribute metadata annotation.
-		final DtoAttribute dtoAttributeAnno = DtoGenerator.getDtoAttributeAnno(attributeGetter, context);
-		// If the attribute should not be ignored.
-		if ((dtoAttributeAnno == null) || ((dtoAttributeAnno != null) && !dtoAttributeAnno.ignore())) {
-			// Gets the attribute original type.
-			final TypeMirror attributeOriginalType = ((ExecutableType) attributeGetter.asType()).getReturnType();
-			final Integer attributeOriginalTypeNameStart = attributeOriginalType.toString().lastIndexOf(" ") + 1;
-			final String attributeOriginalTypeName = attributeOriginalType.toString()
-					.substring(attributeOriginalTypeNameStart);
-			// Gets the default attribute metadata.
-			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName,
-					defaultAttrName, defaultAttrName, "", false, true);
-			// DTOs in attribute hierarchy.
-			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType,
-					context, new HashMap<>());
-			// For each other DTO in the hierarchy.
-			for (final Entry<String, String> dtoTypeInAttrHier : dtoTypesInAttrHier.entrySet()) {
-				// Replaces the original attribute type for the correspondent DTO type.
-				dtoAttributeMetadata.setType(dtoAttributeMetadata.getType().replaceAll(dtoTypeInAttrHier.getKey(),
-						dtoTypeInAttrHier.getValue()));
-			}
-			// If the attribute metadata annotation is present.
-			if (dtoAttributeAnno != null) {
-				// Updates the DTO attribute metadata from the annotation information.
-				dtoAttributeMetadata.setModifiers(Arrays.asList(dtoAttributeAnno.modifiers()));
-				dtoAttributeMetadata.setType(
-						dtoAttributeAnno.type().isEmpty() ? dtoAttributeMetadata.getType() : dtoAttributeAnno.type());
-				dtoAttributeMetadata.setName(
-						dtoAttributeAnno.name().isEmpty() ? dtoAttributeMetadata.getName() : dtoAttributeAnno.name());
-				dtoAttributeMetadata
-				.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription()
-						: dtoAttributeAnno.description());
-				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
-				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
-				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
-			}
-		}
-		// Returns the attribute metadata.
-		return dtoAttributeMetadata;
+	private void generateDto(final TypeElement originalType, final DtoTypeMetadata dtoTypeMetadata) throws IOException {
+		// Gets the velocity engine.
+		final VelocityEngine velocityEngine = new VelocityEngine();
+		// Configures the resource loader to also look at the classpath.
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		// Initializes the velocity engine.
+		velocityEngine.init();
+		// Creates a new velocity context and sets its variables.
+		final VelocityContext velocityContext = new VelocityContext();
+		velocityContext.put("dto", dtoTypeMetadata);
+		velocityContext.put("newLine", "\r\n");
+		velocityContext.put("tab", "\t");
+		velocityContext.put("h", "#");
+		// Gets the template for the DTO.
+		final Template dtoTemplate = velocityEngine.getTemplate(dtoTypeMetadata.getTemplatePath());
+		// Prepares the writer for the DTO.
+		final File dtoFile = new File(
+				dtoTypeMetadata.getTargetPath() + File.separator + dtoTypeMetadata.getFileNamespace(),
+				dtoTypeMetadata.getName() + "." + dtoTypeMetadata.getFileExtension());
+		FileUtils.forceMkdir(dtoFile.getParentFile());
+		final Writer dtoWriter = new FileWriter(dtoFile);
+		// Writes the generated class code.
+		dtoTemplate.merge(velocityContext, dtoWriter);
+		// Closes the class writer.
+		dtoWriter.close();
 	}
 
 	/**
