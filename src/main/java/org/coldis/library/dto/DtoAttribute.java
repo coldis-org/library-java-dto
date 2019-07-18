@@ -59,6 +59,11 @@ public @interface DtoAttribute {
 	public String[] modifiers() default {};
 
 	/**
+	 * If attribute is required.
+	 */
+	public boolean required() default false;
+
+	/**
 	 * If attribute should be placed in constructor and have a setter.
 	 */
 	public boolean readOnly() default false;

@@ -2,11 +2,17 @@ package ${dto.namespace};
 
 import java.io.Serializable;
 import java.util.Objects;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
+
 import java.util.Arrays;
 
 /**
  * ${dto.description}.
  */
+@ApiModel(description = "${dto.description}")
 public class ${dto.name} implements Serializable {
 
 	/**
@@ -34,9 +40,14 @@ public class ${dto.name} implements Serializable {
 	 * Gets the ${attribute.description}.
 	 * @return The ${attribute.description}.
 	 */
+	@ApiModelProperty(
+			required = ${attribute.required},
+			value = "${attribute.description}",
+			accessMode = AccessMode.#{if}(!${attribute.readOnly} && !${attribute.modifiers.contains("final")})READ_WRITE#{else}READ_ONLY#{end})
 	public#{if}(${attribute.modifiers.contains("static")}) static#{end} ${attribute.type} get${attribute.capitalizedName}() {
 		return ${attribute.name};
 	}
+	
 #{if}(!${attribute.readOnly} && !${attribute.modifiers.contains("final")})	
 	/**
 	 * Sets the ${attribute.description}.

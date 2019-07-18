@@ -2,6 +2,8 @@ package org.coldis.library.test.dto;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.coldis.library.dto.DtoAttribute;
 import org.coldis.library.dto.DtoType;
 import org.coldis.library.model.IdentifiedObject;
@@ -73,6 +75,11 @@ public class DtoTestObject implements IdentifiedObject {
 	 * Test attribute.
 	 */
 	private Integer test9;
+
+	/**
+	 * Test attribute.
+	 */
+	private Integer test10;
 
 	/**
 	 * @see org.coldis.library.model.IdentifiedObject#getId()
@@ -152,7 +159,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test4.
 	 */
-	@DtoAttribute(typeName = "java.util.Map<String, Object>")
+	@DtoAttribute(typeName = "java.util.Map<String, Object>", required = true)
 	public DtoTestObject2 getTest4() {
 		return this.test4;
 	}
@@ -226,8 +233,9 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test8.
 	 */
+	@NotNull
 	@JsonGetter(value = "test88")
-	@DtoAttribute(name = "test88", type = Integer.class)
+	@DtoAttribute(name = "test88", type = Integer[].class)
 	public int[] getTest8() {
 		return this.test8;
 	}
@@ -258,6 +266,25 @@ public class DtoTestObject implements IdentifiedObject {
 	 */
 	public void setTest9(final Integer test9) {
 		this.test9 = test9;
+	}
+
+	/**
+	 * Gets the test10.
+	 *
+	 * @return The test10.
+	 */
+	@DtoAttribute(readOnly = true)
+	public Integer getTest10() {
+		return this.test10;
+	}
+
+	/**
+	 * Sets the test10.
+	 *
+	 * @param test10 New test10.
+	 */
+	public void setTest10(final Integer test10) {
+		this.test9 = this.test9;
 	}
 
 }

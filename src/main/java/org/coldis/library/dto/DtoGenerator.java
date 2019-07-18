@@ -27,6 +27,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -154,7 +155,7 @@ public class DtoGenerator extends AbstractProcessor {
 					context, new HashMap<>());
 			// Gets the default attribute metadata.
 			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName,
-					defaultAttrName, defaultAttrName, "", false, true);
+					defaultAttrName, defaultAttrName, "", false, false, true);
 			// If the attribute metadata annotation is present.
 			if (dtoAttributeAnno != null) {
 				// Gets the attribute type value.
@@ -178,8 +179,17 @@ public class DtoGenerator extends AbstractProcessor {
 				.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription()
 						: dtoAttributeAnno.description());
 				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
+				dtoAttributeMetadata.setRequired(dtoAttributeAnno.required());
 				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
 				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
+				// If attribute is not required.
+				if (!dtoAttributeMetadata.getRequired()) {
+					// If there is a not null annotation.
+					if (attributeGetter.getAnnotation(NotNull.class) != null) {
+						// Sets the attribute as required.
+						dtoAttributeMetadata.setRequired(true);
+					}
+				}
 			}
 			// For each other DTO in the hierarchy.
 			for (final Entry<String, String> dtoTypeInAttrHier : dtoTypesInAttrHier.entrySet()) {

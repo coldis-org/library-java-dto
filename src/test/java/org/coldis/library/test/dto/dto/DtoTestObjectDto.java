@@ -2,11 +2,17 @@ package org.coldis.library.test.dto.dto;
 
 import java.io.Serializable;
 import java.util.Objects;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty.AccessMode;
+
 import java.util.Arrays;
 
 /**
  * DtoTestObjectDto.
  */
+@ApiModel(description = "DtoTestObjectDto")
 public class DtoTestObjectDto implements Serializable {
 
 	/**
@@ -52,12 +58,17 @@ public class DtoTestObjectDto implements Serializable {
 	/**
 	 * test8.
 	 */
-	private java.lang.Integer test88;
+	private java.lang.Integer[] test88;
 
 	/**
 	 * test9.
 	 */
 	private java.lang.Integer test9;
+
+	/**
+	 * test10.
+	 */
+	private java.lang.Integer test10;
 
 
 	/**
@@ -71,9 +82,14 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the id.
 	 * @return The id.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "id",
+			accessMode = AccessMode.READ_WRITE)
 	public java.lang.Long getId() {
 		return id;
 	}
+	
 	/**
 	 * Sets the id.
 	 *
@@ -99,9 +115,14 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test1.
 	 * @return The test1.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test1",
+			accessMode = AccessMode.READ_WRITE)
 	public org.coldis.library.test.dto.dto.DtoTestObject2Dto getTest1() {
 		return test1;
 	}
+	
 	/**
 	 * Sets the test1.
 	 *
@@ -127,9 +148,14 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test2.
 	 * @return The test2.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test2",
+			accessMode = AccessMode.READ_WRITE)
 	public java.util.List<org.coldis.library.test.dto.dto.DtoTestObject2Dto> getTest2() {
 		return test2;
 	}
+	
 	/**
 	 * Sets the test2.
 	 *
@@ -155,9 +181,14 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test4.
 	 * @return The test4.
 	 */
+	@ApiModelProperty(
+			required = true,
+			value = "test4",
+			accessMode = AccessMode.READ_WRITE)
 	public java.util.Map<String, Object> getTest4() {
 		return test4;
 	}
+	
 	/**
 	 * Sets the test4.
 	 *
@@ -183,16 +214,26 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test5.
 	 * @return The test5.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test5",
+			accessMode = AccessMode.READ_ONLY)
 	public static java.lang.String getTest5() {
 		return test5;
 	}
+	
 	/**
 	 * Gets the test6.
 	 * @return The test6.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test6",
+			accessMode = AccessMode.READ_WRITE)
 	public org.coldis.library.test.dto.dto.DtoTestObject2Dto[] getTest6() {
 		return test6;
 	}
+	
 	/**
 	 * Sets the test6.
 	 *
@@ -218,9 +259,14 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test7.
 	 * @return The test7.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test7",
+			accessMode = AccessMode.READ_WRITE)
 	public int getTest7() {
 		return test7;
 	}
+	
 	/**
 	 * Sets the test7.
 	 *
@@ -246,16 +292,21 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test8.
 	 * @return The test8.
 	 */
-	public java.lang.Integer getTest88() {
+	@ApiModelProperty(
+			required = true,
+			value = "test8",
+			accessMode = AccessMode.READ_WRITE)
+	public java.lang.Integer[] getTest88() {
 		return test88;
 	}
+	
 	/**
 	 * Sets the test8.
 	 *
 	 * @param test88
 	 *            The test8.
 	 */
-	public void setTest88(final java.lang.Integer test88) {
+	public void setTest88(final java.lang.Integer[] test88) {
 		this.test88 = test88;
 	}
 	
@@ -266,7 +317,7 @@ public class DtoTestObjectDto implements Serializable {
 	 *            The test8.
 	 * @return The updated object.
 	 */
-	public DtoTestObjectDto withTest88(final java.lang.Integer test88) {
+	public DtoTestObjectDto withTest88(final java.lang.Integer[] test88) {
 		this.setTest88(test88);
 		return this;
 	}
@@ -274,9 +325,14 @@ public class DtoTestObjectDto implements Serializable {
 	 * Gets the test9.
 	 * @return The test9.
 	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test9",
+			accessMode = AccessMode.READ_WRITE)
 	public java.lang.Integer getTest9() {
 		return test9;
 	}
+	
 	/**
 	 * Sets the test9.
 	 *
@@ -298,6 +354,18 @@ public class DtoTestObjectDto implements Serializable {
 		this.setTest9(test9);
 		return this;
 	}
+	/**
+	 * Gets the test10.
+	 * @return The test10.
+	 */
+	@ApiModelProperty(
+			required = false,
+			value = "test10",
+			accessMode = AccessMode.READ_ONLY)
+	public java.lang.Integer getTest10() {
+		return test10;
+	}
+	
 
 	/**
 	 * @see java.lang.Object#hashCode()
@@ -313,9 +381,10 @@ public class DtoTestObjectDto implements Serializable {
 				test4,
 				test5,
 				test7,
-				test88
+				test10
 			);
 		result = prime * result + Arrays.hashCode(test6);
+		result = prime * result + Arrays.hashCode(test88);
 		return result;
 	}
 	
@@ -355,7 +424,10 @@ public class DtoTestObjectDto implements Serializable {
 		if (! Objects.equals(test7, other.test7)) {
 			return false;
 		}
-		if (! Objects.equals(test88, other.test88)) {
+		if (! Arrays.equals(test88, other.test88)) {
+			return false;
+		}
+		if (! Objects.equals(test10, other.test10)) {
 			return false;
 		}
 		return true;

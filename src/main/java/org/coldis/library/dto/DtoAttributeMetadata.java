@@ -43,9 +43,14 @@ public class DtoAttributeMetadata implements Serializable {
 	private String defaultValue;
 
 	/**
+	 * If attribute is required.
+	 */
+	private Boolean required;
+
+	/**
 	 * If attribute should be placed in constructor and have a setter.
 	 */
-	Boolean readOnly;
+	private Boolean readOnly;
 
 	/**
 	 * If attribute should be used when comparing the DTO.
@@ -60,12 +65,13 @@ public class DtoAttributeMetadata implements Serializable {
 	 * @param name             Attribute name.
 	 * @param description      Attribute description.
 	 * @param defaultValue     Attribute default value.
+	 * @param required         If attribute is required.
 	 * @param readOnly         If attribute should be placed in constructor and have
 	 *                             a setter.
 	 * @param usedInComparison If attribute should be used when comparing the DTO.
 	 */
 	public DtoAttributeMetadata(final List<String> modifiers, final String type, final String name,
-			final String description, final String defaultValue, final Boolean readOnly,
+			final String description, final String defaultValue, final Boolean required, final Boolean readOnly,
 			final Boolean usedInComparison) {
 		super();
 		this.modifiers = modifiers;
@@ -73,6 +79,7 @@ public class DtoAttributeMetadata implements Serializable {
 		this.name = name;
 		this.description = description;
 		this.defaultValue = defaultValue;
+		this.required = required;
 		this.readOnly = readOnly;
 		this.usedInComparison = usedInComparison;
 	}
@@ -181,6 +188,24 @@ public class DtoAttributeMetadata implements Serializable {
 	 */
 	public void setDefaultValue(final String defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	/**
+	 * Gets the required.
+	 *
+	 * @return The required.
+	 */
+	public Boolean getRequired() {
+		return this.required;
+	}
+
+	/**
+	 * Sets the required.
+	 *
+	 * @param required New required.
+	 */
+	public void setRequired(final Boolean required) {
+		this.required = required;
 	}
 
 	/**
