@@ -10,7 +10,7 @@
 
 	<groupId>org.coldis.library</groupId>
 	<artifactId>dto</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>DTO utilities</name>
@@ -35,7 +35,7 @@
 		<url>https://github.com/coldis-org/library-java-dto</url>
 		<connection>scm:git:https://github.com/coldis-org/library-java-dto.git</connection>
 		<developerConnection>scm:git:git@github.com:coldis-org/library-java-dto.git</developerConnection>
-		<tag>dto-0.0.3</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<dependencies>
