@@ -61,7 +61,14 @@ public @interface DtoAttribute {
 	/**
 	 * If attribute is required.
 	 */
-	public boolean required() default false;
+	public Boolean required() default Boolean.UNDEFINED;
+
+	/**
+	 * Boolean enum.
+	 */
+	public enum Boolean {
+		UNDEFINED, TRUE, FALSE;
+	}
 
 	/**
 	 * If attribute should be placed in constructor and have a setter.

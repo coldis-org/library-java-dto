@@ -156,6 +156,14 @@ public class DtoGenerator extends AbstractProcessor {
 			// Gets the default attribute metadata.
 			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName,
 					defaultAttrName, defaultAttrName, "", false, false, true);
+			// If attribute is not required.
+			if (!dtoAttributeMetadata.getRequired()) {
+				// If there is a not null annotation.
+				if (attributeGetter.getAnnotation(NotNull.class) != null) {
+					// Sets the attribute as required.
+					dtoAttributeMetadata.setRequired(true);
+				}
+			}
 			// If the attribute metadata annotation is present.
 			if (dtoAttributeAnno != null) {
 				// Gets the attribute type value.
@@ -179,17 +187,14 @@ public class DtoGenerator extends AbstractProcessor {
 				.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription()
 						: dtoAttributeAnno.description());
 				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
-				dtoAttributeMetadata.setRequired(dtoAttributeAnno.required());
+				dtoAttributeMetadata.setRequired(
+						dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Boolean.UNDEFINED
+						? dtoAttributeMetadata.getRequired()
+								: (dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Boolean.TRUE
+								? true
+										: false));
 				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
 				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
-				// If attribute is not required.
-				if (!dtoAttributeMetadata.getRequired()) {
-					// If there is a not null annotation.
-					if (attributeGetter.getAnnotation(NotNull.class) != null) {
-						// Sets the attribute as required.
-						dtoAttributeMetadata.setRequired(true);
-					}
-				}
 			}
 			// For each other DTO in the hierarchy.
 			for (final Entry<String, String> dtoTypeInAttrHier : dtoTypesInAttrHier.entrySet()) {
