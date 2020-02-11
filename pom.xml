@@ -10,7 +10,7 @@
 
 	<groupId>org.coldis.library</groupId>
 	<artifactId>dto</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.5</version>
 	<packaging>jar</packaging>
 
 	<name>DTO utilities</name>
@@ -29,13 +29,15 @@
 
 	<properties>
 		<project.config.source.test.compile.annotationProcessors>org.coldis.library.dto.DtoGenerator</project.config.source.test.compile.annotationProcessors>
+		<project.config.source.main.aspect.phase>none</project.config.source.main.aspect.phase>
+		<project.config.source.test.aspect.phase>none</project.config.source.test.aspect.phase>
 	</properties>
 
 	<scm>
 		<url>https://github.com/coldis-org/library-java-dto</url>
 		<connection>scm:git:https://github.com/coldis-org/library-java-dto.git</connection>
 		<developerConnection>scm:git:git@github.com:coldis-org/library-java-dto.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>dto-0.0.5</tag>
 	</scm>
 
 	<dependencies>
