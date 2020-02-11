@@ -159,7 +159,8 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test4.
 	 */
-	@DtoAttribute(typeName = "java.util.Map<String, Object>", required = true)
+	@DtoAttribute(typeName = "java.util.Map<String, Object>",
+			required = org.coldis.library.dto.DtoAttribute.Boolean.TRUE)
 	public DtoTestObject2 getTest4() {
 		return this.test4;
 	}
@@ -215,6 +216,7 @@ public class DtoTestObject implements IdentifiedObject {
 	 *
 	 * @return The test7.
 	 */
+	@NotNull
 	public int getTest7() {
 		return this.test7;
 	}
