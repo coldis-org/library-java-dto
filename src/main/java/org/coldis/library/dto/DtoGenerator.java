@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * DTO generator.
  */
-@SupportedSourceVersion(value = SourceVersion.RELEASE_12)
+@SupportedSourceVersion(value = SourceVersion.RELEASE_11)
 @SupportedAnnotationTypes(value = { "org.coldis.library.dto.DtoType", "org.coldis.library.dto.DtoTypes" })
 public class DtoGenerator extends AbstractProcessor {
 
