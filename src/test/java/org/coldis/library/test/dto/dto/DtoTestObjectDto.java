@@ -260,7 +260,7 @@ public class DtoTestObjectDto implements Serializable {
 	 * @return The test7.
 	 */
 	@ApiModelProperty(
-			required = false,
+			required = true,
 			value = "test7",
 			accessMode = AccessMode.READ_WRITE)
 	public int getTest7() {
