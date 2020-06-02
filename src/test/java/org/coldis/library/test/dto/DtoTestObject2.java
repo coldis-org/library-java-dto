@@ -1,14 +1,14 @@
 package org.coldis.library.test.dto;
 
 import org.coldis.library.dto.DtoType;
-import org.coldis.library.model.IdentifiedObject;
+import org.coldis.library.model.Identifiable;
 
 /**
  * DTO test object.
  */
 @DtoType(targetPath = "src/test/java",
 namespace = "org.coldis.library.test.dto.dto")
-public class DtoTestObject2 implements IdentifiedObject {
+public class DtoTestObject2 implements Identifiable {
 
 	/**
 	 * Serial.
@@ -26,7 +26,7 @@ public class DtoTestObject2 implements IdentifiedObject {
 	private String test;
 
 	/**
-	 * @see org.coldis.library.model.IdentifiedObject#getId()
+	 * @see org.coldis.library.model.Identifiable#getId()
 	 */
 	@Override
 	public Long getId() {
