@@ -40,6 +40,7 @@ public class ${dto.name} implements Serializable {
 	 * Gets the ${attribute.description}.
 	 * @return The ${attribute.description}.
 	 */
+	${attribute.annotations}
 	@ApiModelProperty(
 			required = ${attribute.required},
 			value = "${attribute.description}",

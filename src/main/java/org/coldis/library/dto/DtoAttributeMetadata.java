@@ -58,6 +58,11 @@ public class DtoAttributeMetadata implements Serializable {
 	private Boolean usedInComparison;
 
 	/**
+	 * Annotations to be added.
+	 */
+	private String annotations;
+
+	/**
 	 * Complete constructor.
 	 *
 	 * @param modifiers        Attribute modifiers.
@@ -69,10 +74,18 @@ public class DtoAttributeMetadata implements Serializable {
 	 * @param readOnly         If attribute should be placed in constructor and have
 	 *                             a setter.
 	 * @param usedInComparison If attribute should be used when comparing the DTO.
+	 * @param annotations      Annotations.
 	 */
-	public DtoAttributeMetadata(final List<String> modifiers, final String type, final String name,
-			final String description, final String defaultValue, final Boolean required, final Boolean readOnly,
-			final Boolean usedInComparison) {
+	public DtoAttributeMetadata(
+			final List<String> modifiers,
+			final String type,
+			final String name,
+			final String description,
+			final String defaultValue,
+			final Boolean required,
+			final Boolean readOnly,
+			final Boolean usedInComparison,
+			final String annotations) {
 		super();
 		this.modifiers = modifiers;
 		this.type = type;
@@ -82,6 +95,7 @@ public class DtoAttributeMetadata implements Serializable {
 		this.required = required;
 		this.readOnly = readOnly;
 		this.usedInComparison = usedInComparison;
+		this.annotations = annotations;
 	}
 
 	/**
@@ -104,7 +118,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param modifiers New modifiers.
 	 */
-	public void setModifiers(final List<String> modifiers) {
+	public void setModifiers(
+			final List<String> modifiers) {
 		this.modifiers = modifiers;
 	}
 
@@ -122,7 +137,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param type New type.
 	 */
-	public void setType(final String type) {
+	public void setType(
+			final String type) {
 		this.type = type;
 	}
 
@@ -140,7 +156,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param name New name.
 	 */
-	public void setName(final String name) {
+	public void setName(
+			final String name) {
 		this.name = name;
 	}
 
@@ -150,8 +167,7 @@ public class DtoAttributeMetadata implements Serializable {
 	 * @return The capitalized name.
 	 */
 	public String getCapitalizedName() {
-		return this.getName() == null ? null
-				: this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1);
+		return this.getName() == null ? null : this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1);
 	}
 
 	/**
@@ -168,7 +184,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param description New description.
 	 */
-	public void setDescription(final String description) {
+	public void setDescription(
+			final String description) {
 		this.description = description;
 	}
 
@@ -186,7 +203,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param defaultValue New defaultValue.
 	 */
-	public void setDefaultValue(final String defaultValue) {
+	public void setDefaultValue(
+			final String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
@@ -204,7 +222,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param required New required.
 	 */
-	public void setRequired(final Boolean required) {
+	public void setRequired(
+			final Boolean required) {
 		this.required = required;
 	}
 
@@ -222,7 +241,8 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param readOnly New readOnly.
 	 */
-	public void setReadOnly(final Boolean readOnly) {
+	public void setReadOnly(
+			final Boolean readOnly) {
 		this.readOnly = readOnly;
 	}
 
@@ -240,8 +260,28 @@ public class DtoAttributeMetadata implements Serializable {
 	 *
 	 * @param usedInComparison New usedInComparison.
 	 */
-	public void setUsedInComparison(final Boolean usedInComparison) {
+	public void setUsedInComparison(
+			final Boolean usedInComparison) {
 		this.usedInComparison = usedInComparison;
+	}
+
+	/**
+	 * Gets the annotations.
+	 *
+	 * @return The annotations.
+	 */
+	public String getAnnotations() {
+		return StringUtils.isEmpty(this.annotations) ? "" : this.annotations;
+	}
+
+	/**
+	 * Sets the annotations.
+	 *
+	 * @param annotations New annotations.
+	 */
+	public void setAnnotations(
+			final String annotations) {
+		this.annotations = annotations;
 	}
 
 	/**
@@ -249,7 +289,7 @@ public class DtoAttributeMetadata implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.defaultValue, this.description, this.modifiers, this.name, this.readOnly, this.type,
+		return Objects.hash(this.annotations, this.defaultValue, this.description, this.modifiers, this.name, this.readOnly, this.required, this.type,
 				this.usedInComparison);
 	}
 
@@ -257,22 +297,19 @@ public class DtoAttributeMetadata implements Serializable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(
+			final Object obj) {
 		if (this == obj) {
 			return true;
-		}
-		if (obj == null) {
-			return false;
 		}
 		if (!(obj instanceof DtoAttributeMetadata)) {
 			return false;
 		}
 		final DtoAttributeMetadata other = (DtoAttributeMetadata) obj;
-		return Objects.equals(this.defaultValue, other.defaultValue)
-				&& Objects.equals(this.description, other.description)
-				&& Objects.equals(this.modifiers, other.modifiers) && Objects.equals(this.name, other.name)
-				&& Objects.equals(this.readOnly, other.readOnly) && Objects.equals(this.type, other.type)
-				&& Objects.equals(this.usedInComparison, other.usedInComparison);
+		return Objects.equals(this.annotations, other.annotations) && Objects.equals(this.defaultValue, other.defaultValue)
+				&& Objects.equals(this.description, other.description) && Objects.equals(this.modifiers, other.modifiers)
+				&& Objects.equals(this.name, other.name) && Objects.equals(this.readOnly, other.readOnly) && Objects.equals(this.required, other.required)
+				&& Objects.equals(this.type, other.type) && Objects.equals(this.usedInComparison, other.usedInComparison);
 	}
 
 }
