@@ -4,15 +4,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -26,20 +25,20 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.AnnotationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.coldis.library.helper.ReflectionHelper;
+import org.coldis.library.helper.TypeMirrorHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,15 +158,16 @@ public class DtoGenerator extends AbstractProcessor {
 			// DTOs in attribute hierarchy.
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType, context, new HashMap<>());
 			// Copied annotations.
-			List<Class<?>> copiedAnnotationsTypes = (dtoAttributeAnno == null ? List.of(JsonView.class) : Arrays.asList(dtoAttributeAnno.copiedAnnotations()));
-			final Set<Annotation> copiedAnnotations = new HashSet<>();
-			copiedAnnotationsTypes.forEach(
-					annotationType -> copiedAnnotations.addAll(Arrays.asList(attributeGetter.getAnnotationsByType((Class<Annotation>) annotationType))));
+			final List<String> copiedAnnotationsTypesNames = (dtoAttributeAnno == null ? List.of(JsonView.class.getName().toString())
+					: TypeMirrorHelper.getAnnotationClassesAttribute(dtoAttributeAnno, "copiedAnnotations"));
+			final Set<String> copiedAnnotations = attributeGetter.getAnnotationMirrors().stream()
+					.filter(annotation -> copiedAnnotationsTypesNames
+							.contains(((TypeElement) annotation.getAnnotationType().asElement()).getQualifiedName().toString()))
+					.map(annotation -> annotation.toString()).collect(Collectors.toSet());
+			final String reducedCopiedAnnotations = copiedAnnotations.stream().reduce("", StringUtils::join);
 			// Gets the default attribute metadata.
 			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName, defaultAttrName, defaultAttrName, "", false, false,
-					true, copiedAnnotations.stream().map(annotation -> annotation.toString()).reduce("", (
-							initial,
-							actual) -> initial + actual));
+					true, reducedCopiedAnnotations);
 			// If attribute is not required.
 			if (!dtoAttributeMetadata.getRequired()) {
 				// If there is a not null annotation.
@@ -179,18 +179,11 @@ public class DtoGenerator extends AbstractProcessor {
 			// If the attribute metadata annotation is present.
 			if (dtoAttributeAnno != null) {
 				// Gets the attribute type value.
-				TypeMirror dtoAttributeTypeValue = null;
-				try {
-					dtoAttributeAnno.type();
-				}
-				catch (final MirroredTypeException exception) {
-					dtoAttributeTypeValue = exception.getTypeMirror();
-				}
+				final String dtoAttributeTypeName = TypeMirrorHelper.getAnnotationClassAttribute(dtoAttributeAnno, "type");
 				// Updates the DTO attribute metadata from the annotation information.
 				dtoAttributeMetadata.setModifiers(Arrays.asList(dtoAttributeAnno.modifiers()));
 				dtoAttributeMetadata.setType(dtoAttributeAnno.typeName().isEmpty() ? dtoAttributeMetadata.getType() : dtoAttributeAnno.typeName());
-				dtoAttributeMetadata
-						.setType(dtoAttributeTypeValue.toString().equals("void") ? dtoAttributeMetadata.getType() : dtoAttributeTypeValue.toString());
+				dtoAttributeMetadata.setType(dtoAttributeTypeName.equals("void") ? dtoAttributeMetadata.getType() : dtoAttributeTypeName);
 				dtoAttributeMetadata.setName(dtoAttributeAnno.name().isEmpty() ? dtoAttributeMetadata.getName() : dtoAttributeAnno.name());
 				dtoAttributeMetadata
 						.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription() : dtoAttributeAnno.description());
@@ -209,78 +202,6 @@ public class DtoGenerator extends AbstractProcessor {
 		}
 		// Returns the attribute metadata.
 		return dtoAttributeMetadata;
-	}
-
-	public static void main(
-			String[] args) {
-		DtoAttribute test = new DtoAttribute() {
-
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return DtoAttribute.class;
-			}
-
-			@Override
-			public boolean usedInComparison() {
-				return false;
-			}
-
-			@Override
-			public String typeName() {
-				return "";
-			}
-
-			@Override
-			public Class<?> type() {
-				return Class.class;
-			}
-
-			@Override
-			public org.coldis.library.dto.DtoAttribute.Boolean required() {
-				return Boolean.TRUE;
-			}
-
-			@Override
-			public boolean readOnly() {
-				return false;
-			}
-
-			@Override
-			public String name() {
-				return "";
-			}
-
-			@Override
-			public String[] modifiers() {
-				return new String[] {};
-			}
-
-			@Override
-			public boolean ignore() {
-				return false;
-			}
-
-			@Override
-			public String description() {
-				return "";
-			}
-
-			@Override
-			public String defaultValue() {
-				return "";
-			}
-
-			@Override
-			public Class<?>[] copiedAnnotations() {
-				return new Class[] {};
-			}
-
-			@Override
-			public String context() {
-				return "a";
-			}
-		};
-		new System.out.println(AnnotationUtils.toString(test));
 	}
 
 	/**
@@ -423,19 +344,19 @@ public class DtoGenerator extends AbstractProcessor {
 	private void generateDto(
 			final TypeElement originalType,
 			final DtoType dtoMetadata) {
-		// Gets the DTO metadata.
-		final DtoTypeMetadata dtoTypeMetadata = DtoGenerator.getDtoTypeMetadata(originalType, dtoMetadata, true);
 		// Tries to generate the DTOs.
 		try {
+			// Gets the DTO metadata.
+			final DtoTypeMetadata dtoTypeMetadata = DtoGenerator.getDtoTypeMetadata(originalType, dtoMetadata, true);
 			// Generates the classes.
 			DtoGenerator.LOGGER.debug("Generating DTO " + dtoTypeMetadata.getName() + ".");
 			this.generateDto(originalType, dtoTypeMetadata);
 			DtoGenerator.LOGGER.debug("DTO " + dtoTypeMetadata.getName() + " created successfully.");
 		}
 		// If there is a problem generating the DTOs.
-		catch (final IOException exception) {
+		catch (final Exception exception) {
 			// Logs it.
-			DtoGenerator.LOGGER.error("DTO " + dtoTypeMetadata.getName() + " not created successfully.", exception);
+			DtoGenerator.LOGGER.error("DTO " + dtoMetadata.name() + " not created successfully.", exception);
 		}
 	}
 

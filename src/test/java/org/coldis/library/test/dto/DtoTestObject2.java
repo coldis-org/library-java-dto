@@ -6,8 +6,10 @@ import org.coldis.library.model.Identifiable;
 /**
  * DTO test object.
  */
-@DtoType(targetPath = "src/test/java",
-namespace = "org.coldis.library.test.dto.dto")
+@DtoType(
+		targetPath = "src/test/java",
+		namespace = "org.coldis.library.test.dto.dto"
+)
 public class DtoTestObject2 implements Identifiable {
 
 	/**
@@ -38,7 +40,8 @@ public class DtoTestObject2 implements Identifiable {
 	 *
 	 * @param id New identifier.
 	 */
-	public void setId(final Long id) {
+	public void setId(
+			final Long id) {
 		this.id = id;
 	}
 
@@ -56,7 +59,8 @@ public class DtoTestObject2 implements Identifiable {
 	 *
 	 * @param test New test.
 	 */
-	public void setTest(final String test) {
+	public void setTest(
+			final String test) {
 		this.test = test;
 	}
 
@@ -76,7 +80,8 @@ public class DtoTestObject2 implements Identifiable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(
+			final Object obj) {
 		if (this == obj) {
 			return true;
 		}

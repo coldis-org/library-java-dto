@@ -271,7 +271,7 @@ public class DtoAttributeMetadata implements Serializable {
 	 * @return The annotations.
 	 */
 	public String getAnnotations() {
-		return StringUtils.isEmpty(this.annotations) ? "" : this.annotations;
+		return (this.annotations == null ? "" : this.annotations);
 	}
 
 	/**
