@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 /**
  * DTO generator.
  */
-@SupportedSourceVersion(value = SourceVersion.RELEASE_11)
+@SupportedSourceVersion(value = SourceVersion.RELEASE_17)
 @SupportedAnnotationTypes(value = { "org.coldis.library.dto.DtoType", "org.coldis.library.dto.DtoTypes" })
 public class DtoGenerator extends AbstractProcessor {
 
