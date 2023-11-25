@@ -2,14 +2,14 @@ package org.coldis.library.test.dto;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import org.coldis.library.dto.DtoAttribute;
 import org.coldis.library.dto.DtoType;
 import org.coldis.library.model.Identifiable;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonView;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * DTO test object.
@@ -170,7 +170,7 @@ public class DtoTestObject implements Identifiable {
 	 */
 	@DtoAttribute(
 			typeName = "java.util.Map<String, Object>",
-			required = org.coldis.library.dto.DtoAttribute.Boolean.TRUE
+			required = org.coldis.library.dto.DtoAttribute.Bool.TRUE
 	)
 	public DtoTestObject2 getTest4() {
 		return this.test4;

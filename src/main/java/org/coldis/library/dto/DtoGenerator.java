@@ -27,7 +27,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -44,10 +43,12 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.validation.constraints.NotNull;
+
 /**
  * DTO generator.
  */
-@SupportedSourceVersion(value = SourceVersion.RELEASE_13)
+@SupportedSourceVersion(value = SourceVersion.RELEASE_20)
 @SupportedAnnotationTypes(value = { "org.coldis.library.dto.DtoType", "org.coldis.library.dto.DtoTypes" })
 public class DtoGenerator extends AbstractProcessor {
 
@@ -105,7 +106,7 @@ public class DtoGenerator extends AbstractProcessor {
 			final String context,
 			final Map<String, String> dtoTypesInHierarchy) {
 		// If the type is a array of a declared type.
-		final Boolean isDeclaredArrayType = (type instanceof ArrayType) && (((ArrayType) type).getComponentType() instanceof DeclaredType);
+		final boolean isDeclaredArrayType = (type instanceof ArrayType) && (((ArrayType) type).getComponentType() instanceof DeclaredType);
 		// Only if it is a declared type or an array of.
 		if ((type instanceof DeclaredType) || isDeclaredArrayType) {
 			// Gets the declared type and type element.
@@ -189,8 +190,8 @@ public class DtoGenerator extends AbstractProcessor {
 						.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription() : dtoAttributeAnno.description());
 				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
 				dtoAttributeMetadata
-						.setRequired(dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Boolean.UNDEFINED ? dtoAttributeMetadata.getRequired()
-								: (dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Boolean.TRUE ? true : false));
+						.setRequired(dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Bool.UNDEFINED ? dtoAttributeMetadata.getRequired()
+								: (dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Bool.TRUE ? true : false));
 				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
 				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
 			}

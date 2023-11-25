@@ -63,12 +63,12 @@ public @interface DtoAttribute {
 	/**
 	 * If attribute is required.
 	 */
-	public Boolean required() default Boolean.UNDEFINED;
+	public Bool required() default Bool.UNDEFINED;
 
 	/**
 	 * Boolean enum.
 	 */
-	public enum Boolean {
+	public enum Bool {
 		UNDEFINED, TRUE, FALSE;
 	}
 
