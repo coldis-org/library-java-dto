@@ -48,7 +48,7 @@ import jakarta.validation.constraints.NotNull;
 /**
  * DTO generator.
  */
-@SupportedSourceVersion(value = SourceVersion.RELEASE_20)
+@SupportedSourceVersion(value = SourceVersion.RELEASE_21)
 @SupportedAnnotationTypes(value = { "org.coldis.library.dto.DtoType", "org.coldis.library.dto.DtoTypes" })
 public class DtoGenerator extends AbstractProcessor {
 
