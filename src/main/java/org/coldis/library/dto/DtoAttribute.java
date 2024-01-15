@@ -9,6 +9,16 @@ import java.lang.annotation.Target;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.callbacks.Callback;
+import io.swagger.v3.oas.annotations.links.Link;
+import io.swagger.v3.oas.annotations.links.LinkParameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 /**
  * DTO attribute metadata.
  */
@@ -85,6 +95,14 @@ public @interface DtoAttribute {
 	/**
 	 * Annotations to be copied.
 	 */
-	public Class<?>[] copiedAnnotations() default { JsonView.class };
+	public Class<?>[] copiedAnnotations() default {
+
+			// JSON.
+			JsonView.class,
+			// OpenAPI.
+			Operation.class, Parameter.class, Parameters.class, Link.class, LinkParameter.class, Callback.class, RequestBody.class, ApiResponse.class,
+			ApiResponses.class
+
+	};
 
 }
