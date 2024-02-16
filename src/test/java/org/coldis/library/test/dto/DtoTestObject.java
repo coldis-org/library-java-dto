@@ -9,6 +9,7 @@ import org.coldis.library.model.Identifiable;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -128,6 +129,7 @@ public class DtoTestObject implements Identifiable {
 	 *
 	 * @return The test2.
 	 */
+	@NotNull
 	@JsonView(DtoTestObject.class)
 	public List<DtoTestObject2> getTest2() {
 		return this.test2;
@@ -148,7 +150,6 @@ public class DtoTestObject implements Identifiable {
 	 *
 	 * @return The test3.
 	 */
-	@DtoAttribute(ignore = true)
 	public String getTest3() {
 		return this.test3;
 	}
@@ -168,6 +169,7 @@ public class DtoTestObject implements Identifiable {
 	 *
 	 * @return The test4.
 	 */
+	@Valid
 	@DtoAttribute(
 			typeName = "java.util.Map<String, Object>",
 			required = org.coldis.library.dto.DtoAttribute.Bool.TRUE

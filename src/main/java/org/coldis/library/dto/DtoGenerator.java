@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,22 +96,24 @@ public class DtoGenerator extends AbstractProcessor {
 	/**
 	 * Gets the DTO types in hierarchy recursively.
 	 *
-	 * @param  type                The type to get the DTOs type recursively.
-	 * @param  context             The DTO generation context.
-	 * @param  dtoTypesInHierarchy The map with already found DTO types in
-	 *                                 hierarchy.
-	 * @return                     The DTO types in hierarchy recursively.
+	 * @param  attributeOriginalType The type to get the DTOs type recursively.
+	 * @param  context               The DTO generation context.
+	 * @param  dtoTypesInHierarchy   The map with already found DTO types in
+	 *                                   hierarchy.
+	 * @return                       The DTO types in hierarchy recursively.
 	 */
 	public static Map<String, String> getDtoTypesInHierarchy(
-			final TypeMirror type,
+			final Type attributeOriginalType,
 			final String context,
 			final Map<String, String> dtoTypesInHierarchy) {
 		// If the type is a array of a declared type.
-		final boolean isDeclaredArrayType = (type instanceof ArrayType) && (((ArrayType) type).getComponentType() instanceof DeclaredType);
+		final boolean isDeclaredArrayType = (attributeOriginalType instanceof ArrayType)
+				&& (((ArrayType) attributeOriginalType).getComponentType() instanceof DeclaredType);
 		// Only if it is a declared type or an array of.
-		if ((type instanceof DeclaredType) || isDeclaredArrayType) {
+		if ((attributeOriginalType instanceof DeclaredType) || isDeclaredArrayType) {
 			// Gets the declared type and type element.
-			final DeclaredType declaredType = isDeclaredArrayType ? ((DeclaredType) ((ArrayType) type).getComponentType()) : ((DeclaredType) type);
+			final DeclaredType declaredType = isDeclaredArrayType ? ((DeclaredType) ((ArrayType) attributeOriginalType).getComponentType())
+					: ((DeclaredType) attributeOriginalType);
 			final TypeElement currentTypeElement = (TypeElement) declaredType.asElement();
 			// Gets the DTO type metadata for a given context.
 			final DtoType dtoAttributeTypeAnno = DtoGenerator.getDtoTypeAnno(currentTypeElement, context);
@@ -126,7 +129,7 @@ public class DtoGenerator extends AbstractProcessor {
 			if (declaredType.getTypeArguments() != null) {
 				for (final TypeMirror currentTypeArgument : declaredType.getTypeArguments()) {
 					// Gets the DTO types in hierarchy recursively.
-					DtoGenerator.getDtoTypesInHierarchy(currentTypeArgument, context, dtoTypesInHierarchy);
+					DtoGenerator.getDtoTypesInHierarchy((Type) currentTypeArgument, context, dtoTypesInHierarchy);
 				}
 			}
 		}
@@ -153,10 +156,10 @@ public class DtoGenerator extends AbstractProcessor {
 		// If the attribute should not be ignored.
 		if ((dtoAttributeAnno == null) || ((dtoAttributeAnno != null) && !dtoAttributeAnno.ignore())) {
 			// Gets the attribute original type.
-			final TypeMirror attributeOriginalType = ((ExecutableType) attributeGetter.asType()).getReturnType();
-			final Integer attributeOriginalTypeNameStart = attributeOriginalType.toString().lastIndexOf(" ") + 1;
-			final String attributeOriginalTypeName = attributeOriginalType.toString().substring(attributeOriginalTypeNameStart);
-			// DTOs in attribute hierarchy.
+			final Type attributeOriginalType = (Type) ((ExecutableType) attributeGetter.asType()).getReturnType();
+			final int attributeOriginalTypeNameStart = attributeOriginalType.toString().lastIndexOf(" ") + 1;
+			final String attributeOriginalTypeName = attributeOriginalType.getTypeName();
+			// DTOs in attribute hierarchy.TypeMirror
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType, context, new HashMap<>());
 			// Copied annotations.
 			final List<String> copiedAnnotationsTypesNames = (dtoAttributeAnno == null ? List.of(JsonView.class.getName().toString())
@@ -352,7 +355,7 @@ public class DtoGenerator extends AbstractProcessor {
 			// Generates the classes.
 			DtoGenerator.LOGGER.debug("Generating DTO " + dtoTypeMetadata.getName() + ".");
 			this.generateDto(originalType, dtoTypeMetadata);
-			DtoGenerator.LOGGER.debug("DTO " + dtoTypeMetadata.getName() + " created successfully.");
+			DtoGenerator.LOGGER.info("DTO " + dtoTypeMetadata.getName() + " created successfully.");
 		}
 		// If there is a problem generating the DTOs.
 		catch (final Exception exception) {
