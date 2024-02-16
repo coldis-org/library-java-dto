@@ -31,6 +31,11 @@ public class DtoTestObjectDto implements Serializable {
 	private java.util.List<org.coldis.library.test.dto.dto.DtoTestObject2Dto> test2;
 
 	/**
+	 * test3.
+	 */
+	private java.lang.String test3;
+
+	/**
 	 * test4.
 	 */
 	private java.util.Map<String, Object> test4;
@@ -161,6 +166,36 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	public DtoTestObjectDto withTest2(final java.util.List<org.coldis.library.test.dto.dto.DtoTestObject2Dto> test2) {
 		this.setTest2(test2);
+		return this;
+	}
+	/**
+	 * Gets the test3.
+	 * @return The test3.
+	 */
+	
+	public java.lang.String getTest3() {
+		return test3;
+	}
+	
+	/**
+	 * Sets the test3.
+	 *
+	 * @param test3
+	 *            The test3.
+	 */
+	public void setTest3(final java.lang.String test3) {
+		this.test3 = test3;
+	}
+	
+	/**
+	 * Sets the test3 and returns the updated object.
+	 *
+	 * @param test3
+	 *            The test3.
+	 * @return The updated object.
+	 */
+	public DtoTestObjectDto withTest3(final java.lang.String test3) {
+		this.setTest3(test3);
 		return this;
 	}
 	/**
@@ -349,6 +384,9 @@ test1
 test2
 
 ,
+test3
+
+,
 test4
 
 ,
@@ -393,6 +431,9 @@ test10
 			return false;
 		}
 		if (! Objects.equals(test2, other.test2)) {
+			return false;
+		}
+		if (! Objects.equals(test3, other.test3)) {
 			return false;
 		}
 		if (! Objects.equals(test4, other.test4)) {

@@ -4,14 +4,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Type;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -39,8 +41,6 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.coldis.library.helper.ReflectionHelper;
 import org.coldis.library.helper.TypeMirrorHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -56,7 +56,7 @@ public class DtoGenerator extends AbstractProcessor {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(DtoGenerator.class);
+	private static final Logger LOGGER = Logger.getLogger(DtoGenerator.class.getName());
 
 	/**
 	 * Gets the DTO attribute metadata from an attribute getter and a context.
@@ -103,7 +103,7 @@ public class DtoGenerator extends AbstractProcessor {
 	 * @return                       The DTO types in hierarchy recursively.
 	 */
 	public static Map<String, String> getDtoTypesInHierarchy(
-			final Type attributeOriginalType,
+			final TypeMirror attributeOriginalType,
 			final String context,
 			final Map<String, String> dtoTypesInHierarchy) {
 		// If the type is a array of a declared type.
@@ -129,7 +129,7 @@ public class DtoGenerator extends AbstractProcessor {
 			if (declaredType.getTypeArguments() != null) {
 				for (final TypeMirror currentTypeArgument : declaredType.getTypeArguments()) {
 					// Gets the DTO types in hierarchy recursively.
-					DtoGenerator.getDtoTypesInHierarchy((Type) currentTypeArgument, context, dtoTypesInHierarchy);
+					DtoGenerator.getDtoTypesInHierarchy(currentTypeArgument, context, dtoTypesInHierarchy);
 				}
 			}
 		}
@@ -156,9 +156,24 @@ public class DtoGenerator extends AbstractProcessor {
 		// If the attribute should not be ignored.
 		if ((dtoAttributeAnno == null) || ((dtoAttributeAnno != null) && !dtoAttributeAnno.ignore())) {
 			// Gets the attribute original type.
-			final Type attributeOriginalType = (Type) ((ExecutableType) attributeGetter.asType()).getReturnType();
-			final int attributeOriginalTypeNameStart = attributeOriginalType.toString().lastIndexOf(" ") + 1;
-			final String attributeOriginalTypeName = attributeOriginalType.getTypeName();
+			TypeMirror attributeOriginalType = ((ExecutableType) attributeGetter.asType()).getReturnType();
+			// Hack to get correct type name for Hibernate modified classes.
+			final Optional<Field> attributeOriginalTypeThisField = List.of(attributeOriginalType.getClass().getDeclaredFields()).stream()
+					.filter(field -> field.getName().startsWith("this")).findFirst();
+			if (attributeOriginalTypeThisField.isPresent()) {
+				try {
+					attributeOriginalTypeThisField.get().setAccessible(true);
+					attributeOriginalType = (TypeMirror) attributeOriginalTypeThisField.get().get(attributeOriginalType);
+				}
+				catch (final Exception error) {
+					DtoGenerator.LOGGER.warning("Error getting attributeOriginalTypeThisField: " + error.getLocalizedMessage());
+				}
+				finally {
+					attributeOriginalTypeThisField.get().setAccessible(false);
+				}
+			}
+			final String attributeOriginalTypeName = (attributeOriginalType.toString().substring(attributeOriginalType.toString().lastIndexOf(" ") + 1));
+
 			// DTOs in attribute hierarchy.TypeMirror
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType, context, new HashMap<>());
 			// Copied annotations.
@@ -353,14 +368,14 @@ public class DtoGenerator extends AbstractProcessor {
 			// Gets the DTO metadata.
 			final DtoTypeMetadata dtoTypeMetadata = DtoGenerator.getDtoTypeMetadata(originalType, dtoMetadata, true);
 			// Generates the classes.
-			DtoGenerator.LOGGER.debug("Generating DTO " + dtoTypeMetadata.getName() + ".");
+			DtoGenerator.LOGGER.fine("Generating DTO " + dtoTypeMetadata.getName() + ".");
 			this.generateDto(originalType, dtoTypeMetadata);
 			DtoGenerator.LOGGER.info("DTO " + dtoTypeMetadata.getName() + " created successfully.");
 		}
 		// If there is a problem generating the DTOs.
 		catch (final Exception exception) {
 			// Logs it.
-			DtoGenerator.LOGGER.error("DTO " + dtoMetadata.name() + " not created successfully.", exception);
+			DtoGenerator.LOGGER.warning("DTO " + dtoMetadata.name() + " not created successfully:" + exception.getLocalizedMessage());
 		}
 	}
 
@@ -373,7 +388,7 @@ public class DtoGenerator extends AbstractProcessor {
 	public boolean process(
 			final Set<? extends TypeElement> annotations,
 			final RoundEnvironment roundEnv) {
-		DtoGenerator.LOGGER.debug("Initializing DTOs generation...");
+		DtoGenerator.LOGGER.fine("Initializing DTOs generation...");
 		// For each type generating multiple DTOs.
 		for (final TypeElement originalType : (Set<TypeElement>) roundEnv.getElementsAnnotatedWith(DtoTypes.class)) {
 			// Gets the DTOs metadata.
@@ -392,7 +407,7 @@ public class DtoGenerator extends AbstractProcessor {
 			this.generateDto(originalType, dtoMetadata);
 		}
 		// Mark that the message sources annotations have been processed.
-		DtoGenerator.LOGGER.debug("Finishing DtoGenerator...");
+		DtoGenerator.LOGGER.fine("Finishing DtoGenerator...");
 		return true;
 	}
 
