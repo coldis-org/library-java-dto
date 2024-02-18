@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -65,6 +66,7 @@ public class DtoTypeMetadata implements Serializable {
 
 	/**
 	 * Default constructor.
+	 * 
 	 * @param context           Type context.
 	 * @param targetPath        Target path.
 	 * @param templatePath      Template path.
@@ -75,26 +77,16 @@ public class DtoTypeMetadata implements Serializable {
 	 * @param description       Type description.
 	 * @param attributes        Type attributes metadata.
 	 */
-	public DtoTypeMetadata(
-			final String context,
-			final String targetPath,
-			final String templatePath,
-			final String fileExtension,
-			final String namespace,
-			final String originalClassName,
-			final String name,
-			final String description,
-			final List<DtoAttributeMetadata> attributes) {
+	public DtoTypeMetadata(String originalClassName, DtoType annotation) {
 		super();
 		this.originalClassName = originalClassName;
-		this.context = context;
-		this.targetPath = targetPath;
-		this.templatePath = templatePath;
-		this.fileExtension = fileExtension;
-		this.namespace = namespace;
-		this.name = name;
-		this.description = description;
-		this.attributes = attributes;
+		this.context = annotation.context();
+		this.targetPath = annotation.targetPath();
+		this.templatePath = annotation.templatePath();
+		this.fileExtension = annotation.fileExtension();
+		this.namespace = annotation.namespace();
+		this.name = annotation.name().isEmpty() ? List.of(originalClassName.split(".")).getLast() + "Dto" : annotation.name();
+		this.description = annotation.description();
 	}
 
 	/**
