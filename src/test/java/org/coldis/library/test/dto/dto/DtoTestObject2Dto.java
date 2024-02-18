@@ -8,6 +8,7 @@ import java.util.Arrays;
 /**
  * DtoTestObject2Dto.
  */
+@DtoOrigin(originalClassName = "org.coldis.library.test.dto.DtoTestObject2")
 public class DtoTestObject2Dto implements Serializable {
 
 	/**

@@ -2,8 +2,8 @@ package ${dto.namespace};
 
 import java.io.Serializable;
 import java.util.Objects;
-
 import java.util.Arrays;
+import org.coldis.library.dto.DtoOrigin;
 
 /**
  * ${dto.description}.
