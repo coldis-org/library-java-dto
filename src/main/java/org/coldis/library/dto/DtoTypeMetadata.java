@@ -84,7 +84,7 @@ public class DtoTypeMetadata implements Serializable {
 		this.templatePath = annotation.templatePath();
 		this.fileExtension = annotation.fileExtension();
 		this.namespace = annotation.namespace();
-		this.name = annotation.name().isEmpty() ? List.of(originalClassName.split(".")).getLast() + "Dto" : annotation.name();
+		this.name = annotation.name().isEmpty() ? List.of(originalClassName.split("\\.")).getLast() + "Dto" : annotation.name();
 		this.description = annotation.description();
 	}
 

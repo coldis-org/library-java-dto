@@ -51,9 +51,9 @@ public class DtoGeneratorTest {
 			reconvertedDto.setTest9(8);
 			Assertions.assertNotEquals(originalDto.getTest9(), reconvertedDto.getTest9());
 			Assertions.assertEquals(originalDto, reconvertedDto);
-			
+
 			// Asserts the DTO has the DtoOrigin annotation.
-			DtoOrigin dtoOrigin = originalDto.getClass().getAnnotation(DtoOrigin.class);
+			final DtoOrigin dtoOrigin = originalDto.getClass().getAnnotation(DtoOrigin.class);
 			Assertions.assertNotNull(dtoOrigin);
 			Assertions.assertEquals(originalObject.getClass().getName(), dtoOrigin.originalClassName());
 
