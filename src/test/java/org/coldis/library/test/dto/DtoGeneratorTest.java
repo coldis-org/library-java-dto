@@ -3,6 +3,7 @@ package org.coldis.library.test.dto;
 import java.util.List;
 import java.util.Map;
 
+import org.coldis.library.dto.DtoOrigin;
 import org.coldis.library.test.dto.dto.DtoTestObject2Dto;
 import org.coldis.library.test.dto.dto.DtoTestObjectDto;
 import org.junit.jupiter.api.Assertions;
@@ -50,6 +51,11 @@ public class DtoGeneratorTest {
 			reconvertedDto.setTest9(8);
 			Assertions.assertNotEquals(originalDto.getTest9(), reconvertedDto.getTest9());
 			Assertions.assertEquals(originalDto, reconvertedDto);
+			
+			// Asserts the DTO has the DtoOrigin annotation.
+			DtoOrigin dtoOrigin = originalDto.getClass().getAnnotation(DtoOrigin.class);
+			Assertions.assertNotNull(dtoOrigin);
+			Assertions.assertEquals(originalObject.getClass().getName(), dtoOrigin.originalClassName());
 
 		}
 	}

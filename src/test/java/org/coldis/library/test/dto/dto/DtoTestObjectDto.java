@@ -2,8 +2,8 @@ package org.coldis.library.test.dto.dto;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 import java.util.Arrays;
+import org.coldis.library.dto.DtoOrigin;
 
 /**
  * DtoTestObjectDto.
