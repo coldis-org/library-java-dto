@@ -8,6 +8,7 @@ import java.util.Arrays;
 /**
  * ${dto.description}.
  */
+@DtoOrigin(originalClassName = "${dto.originalClassName}")
 public class ${dto.name} implements Serializable {
 
 	/**

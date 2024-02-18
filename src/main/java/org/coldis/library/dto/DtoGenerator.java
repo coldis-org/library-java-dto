@@ -273,8 +273,8 @@ public class DtoGenerator extends AbstractProcessor {
 			final Boolean alsoGetAttributesMetadata) {
 		// Gets the default type metadata.
 		final DtoTypeMetadata dtoTypeMetadata = new DtoTypeMetadata(dtoTypeAnno.context(), dtoTypeAnno.targetPath(), dtoTypeAnno.templatePath(),
-				dtoTypeAnno.fileExtension(), dtoTypeAnno.namespace(), dtoTypeAnno.name().isEmpty() ? originalType.getSimpleName() + "Dto" : dtoTypeAnno.name(),
-				dtoTypeAnno.description(), null);
+				dtoTypeAnno.fileExtension(), dtoTypeAnno.namespace(), originalType.getQualifiedName().toString(),
+				dtoTypeAnno.name().isEmpty() ? originalType.getSimpleName() + "Dto" : dtoTypeAnno.name(), dtoTypeAnno.description(), null);
 		// If attributes metadata should also be retrieved.
 		if (alsoGetAttributesMetadata) {
 			// Attributes of DTO.

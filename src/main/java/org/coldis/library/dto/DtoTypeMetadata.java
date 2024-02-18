@@ -44,6 +44,11 @@ public class DtoTypeMetadata implements Serializable {
 	private String namespace;
 
 	/**
+	 * Original class name.
+	 */
+	private String originalClassName;
+
+	/**
 	 * Type name.
 	 */
 	private String name;
@@ -60,20 +65,28 @@ public class DtoTypeMetadata implements Serializable {
 
 	/**
 	 * Default constructor.
-	 *
-	 * @param context       Type context.
-	 * @param targetPath    Target path.
-	 * @param templatePath  Template path.
-	 * @param fileExtension The DTO file extension.
-	 * @param namespace     Type namespace.
-	 * @param name          Type name.
-	 * @param description   Type description.
-	 * @param attributes    Type attributes metadata.
+	 * @param context           Type context.
+	 * @param targetPath        Target path.
+	 * @param templatePath      Template path.
+	 * @param fileExtension     The DTO file extension.
+	 * @param namespace         Type namespace.
+	 * @param originalClassName Original class name.
+	 * @param name              Type name.
+	 * @param description       Type description.
+	 * @param attributes        Type attributes metadata.
 	 */
-	public DtoTypeMetadata(final String context, final String targetPath, final String templatePath,
-			final String fileExtension, final String namespace, final String name, final String description,
+	public DtoTypeMetadata(
+			final String context,
+			final String targetPath,
+			final String templatePath,
+			final String fileExtension,
+			final String namespace,
+			final String originalClassName,
+			final String name,
+			final String description,
 			final List<DtoAttributeMetadata> attributes) {
 		super();
+		this.originalClassName = originalClassName;
 		this.context = context;
 		this.targetPath = targetPath;
 		this.templatePath = templatePath;
@@ -98,7 +111,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param context New context.
 	 */
-	public void setContext(final String context) {
+	public void setContext(
+			final String context) {
 		this.context = context;
 	}
 
@@ -116,7 +130,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param targetPath New targetPath.
 	 */
-	public void setTargetPath(final String targetPath) {
+	public void setTargetPath(
+			final String targetPath) {
 		this.targetPath = targetPath;
 	}
 
@@ -134,7 +149,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param templatePath New templatePath.
 	 */
-	public void setTemplatePath(final String templatePath) {
+	public void setTemplatePath(
+			final String templatePath) {
 		this.templatePath = templatePath;
 	}
 
@@ -152,7 +168,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param fileExtension New fileExtension.
 	 */
-	public void setFileExtension(final String fileExtension) {
+	public void setFileExtension(
+			final String fileExtension) {
 		this.fileExtension = fileExtension;
 	}
 
@@ -170,7 +187,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param namespace New namespace.
 	 */
-	public void setNamespace(final String namespace) {
+	public void setNamespace(
+			final String namespace) {
 		this.namespace = namespace;
 	}
 
@@ -181,6 +199,25 @@ public class DtoTypeMetadata implements Serializable {
 	 */
 	public String getFileNamespace() {
 		return this.namespace.replace(".", File.separator);
+	}
+
+	/**
+	 * Gets the originalClassName.
+	 *
+	 * @return The originalClassName.
+	 */
+	public String getOriginalClassName() {
+		return this.originalClassName;
+	}
+
+	/**
+	 * Sets the originalClassName.
+	 *
+	 * @param originalClass New originalClassName.
+	 */
+	public void setOriginalClassName(
+			final String originalClassName) {
+		this.originalClassName = originalClassName;
 	}
 
 	/**
@@ -197,7 +234,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param name New name.
 	 */
-	public void setName(final String name) {
+	public void setName(
+			final String name) {
 		this.name = name;
 	}
 
@@ -215,7 +253,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param description New description.
 	 */
-	public void setDescription(final String description) {
+	public void setDescription(
+			final String description) {
 		this.description = description;
 	}
 
@@ -239,7 +278,8 @@ public class DtoTypeMetadata implements Serializable {
 	 *
 	 * @param attributes New attributes.
 	 */
-	public void setAttributes(final List<DtoAttributeMetadata> attributes) {
+	public void setAttributes(
+			final List<DtoAttributeMetadata> attributes) {
 		this.attributes = attributes;
 	}
 
@@ -248,29 +288,27 @@ public class DtoTypeMetadata implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.attributes, this.context, this.description, this.fileExtension, this.name,
-				this.namespace, this.targetPath, this.templatePath);
+		return Objects.hash(this.attributes, this.context, this.description, this.fileExtension, this.name, this.namespace, this.originalClassName,
+				this.targetPath, this.templatePath);
 	}
 
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(
+			final Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof DtoTypeMetadata)) {
+		if ((obj == null) || (this.getClass() != obj.getClass())) {
 			return false;
 		}
 		final DtoTypeMetadata other = (DtoTypeMetadata) obj;
 		return Objects.equals(this.attributes, other.attributes) && Objects.equals(this.context, other.context)
-				&& Objects.equals(this.description, other.description)
-				&& Objects.equals(this.fileExtension, other.fileExtension) && Objects.equals(this.name, other.name)
-				&& Objects.equals(this.namespace, other.namespace) && Objects.equals(this.targetPath, other.targetPath)
+				&& Objects.equals(this.description, other.description) && Objects.equals(this.fileExtension, other.fileExtension)
+				&& Objects.equals(this.name, other.name) && Objects.equals(this.namespace, other.namespace)
+				&& Objects.equals(this.originalClassName, other.originalClassName) && Objects.equals(this.targetPath, other.targetPath)
 				&& Objects.equals(this.templatePath, other.templatePath);
 	}
 
