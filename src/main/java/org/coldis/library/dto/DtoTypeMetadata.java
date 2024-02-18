@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,7 +65,7 @@ public class DtoTypeMetadata implements Serializable {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param context           Type context.
 	 * @param targetPath        Target path.
 	 * @param templatePath      Template path.
@@ -77,7 +76,7 @@ public class DtoTypeMetadata implements Serializable {
 	 * @param description       Type description.
 	 * @param attributes        Type attributes metadata.
 	 */
-	public DtoTypeMetadata(String originalClassName, DtoType annotation) {
+	public DtoTypeMetadata(final String originalClassName, final DtoType annotation) {
 		super();
 		this.originalClassName = originalClassName;
 		this.context = annotation.context();
@@ -229,6 +228,15 @@ public class DtoTypeMetadata implements Serializable {
 	public void setName(
 			final String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Gets the qualified name.
+	 *
+	 * @return The qualified name.
+	 */
+	public String getQualifiedName() {
+		return this.getNamespace() + "." + this.getName();
 	}
 
 	/**
