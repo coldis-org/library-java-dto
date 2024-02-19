@@ -122,8 +122,7 @@ public class DtoGenerator extends AbstractProcessor {
 				// Gets the attribute type metadata.
 				final DtoTypeMetadata dtoAttributeTypeMetadata = DtoGenerator.getDtoTypeMetadata(currentTypeElement, dtoAttributeTypeAnno, false);
 				// Adds the DTO type to the map.
-				dtoTypesInHierarchy.put(currentTypeElement.getQualifiedName().toString(),
-						dtoAttributeTypeMetadata.getNamespace() + "." + dtoAttributeTypeMetadata.getName());
+				dtoTypesInHierarchy.put(currentTypeElement.getQualifiedName().toString(), dtoAttributeTypeMetadata.getQualifiedName());
 			}
 			// For each type parameter of the current type.
 			if (declaredType.getTypeArguments() != null) {
