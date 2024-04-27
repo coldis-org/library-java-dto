@@ -97,6 +97,8 @@ public @interface DtoAttribute {
 	 */
 	public Class<?>[] copiedAnnotations() default {
 
+			// Deprecation.
+			Deprecated.class,
 			// JSON.
 			JsonView.class,
 			// OpenAPI.
