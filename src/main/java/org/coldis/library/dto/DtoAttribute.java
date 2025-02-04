@@ -112,6 +112,6 @@ public @interface DtoAttribute {
 	/**
 	 * Annotations to be copied.
 	 */
-	public Class<?>[] copiedAnnotations() default DtoAttribute.DEFAULT_COPIED_ANNOTATIONS;
+	public Class<?>[] copiedAnnotations() default void.class;
 
 }

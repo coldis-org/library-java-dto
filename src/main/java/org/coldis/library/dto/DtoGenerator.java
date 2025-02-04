@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -174,9 +175,10 @@ public class DtoGenerator extends AbstractProcessor {
 			// DTOs in attribute hierarchy.TypeMirror
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType, context, new HashMap<>());
 			// Copied annotations.
-			final List<String> copiedAnnotationsTypesNames = (dtoAttributeAnno == null
-					? Arrays.stream(DtoAttribute.DEFAULT_COPIED_ANNOTATIONS).map(item -> item.getName().toString()).toList()
-					: TypeMirrorHelper.getAnnotationClassesAttribute(dtoAttributeAnno, "copiedAnnotations"));
+			final List<String> copiedAnnotationsTypesNames = ((dtoAttributeAnno == null)
+					|| Objects.equals(new Class<?>[] { void.class }, dtoAttributeAnno.copiedAnnotations())
+							? Arrays.stream(DtoAttribute.DEFAULT_COPIED_ANNOTATIONS).map(item -> item.getName().toString()).toList()
+							: TypeMirrorHelper.getAnnotationClassesAttribute(dtoAttributeAnno, "copiedAnnotations"));
 			final Set<String> copiedAnnotations = attributeGetter.getAnnotationMirrors().stream()
 					.filter(annotation -> copiedAnnotationsTypesNames
 							.contains(((TypeElement) annotation.getAnnotationType().asElement()).getQualifiedName().toString()))
