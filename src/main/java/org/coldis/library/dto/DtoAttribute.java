@@ -7,6 +7,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.coldis.library.serialization.json.SensitiveAttribute;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -99,8 +101,8 @@ public @interface DtoAttribute {
 
 			// Deprecation.
 			Deprecated.class,
-			// JSON.
-			JsonView.class,
+			// JSON serialization.
+			JsonView.class, SensitiveAttribute.class,
 			// OpenAPI.
 			Operation.class, Parameter.class, Parameters.class, Link.class, LinkParameter.class, Callback.class, RequestBody.class, ApiResponse.class,
 			ApiResponses.class
