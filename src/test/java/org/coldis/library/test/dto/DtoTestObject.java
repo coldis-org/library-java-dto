@@ -312,7 +312,7 @@ public class DtoTestObject implements Identifiable {
 	 */
 	public void setTest10(
 			final Integer test10) {
-		this.test9 = this.test9;
+		this.test10 = test10;
 	}
 
 }
