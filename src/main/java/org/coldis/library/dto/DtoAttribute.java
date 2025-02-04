@@ -30,6 +30,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public @interface DtoAttribute {
 
 	/**
+	 * Default copied annotations.
+	 */
+	public static final Class<?>[] DEFAULT_COPIED_ANNOTATIONS = {
+
+			// Deprecation.
+			Deprecated.class,
+			// JSON serialization.
+			JsonView.class, SensitiveAttribute.class,
+			// OpenAPI.
+			Operation.class, Parameter.class, Parameters.class, Link.class, LinkParameter.class, Callback.class, RequestBody.class, ApiResponse.class,
+			ApiResponses.class
+
+	};
+
+	/**
 	 * Context is used to identify types and attributes that should be bound
 	 * together.
 	 */
@@ -97,16 +112,6 @@ public @interface DtoAttribute {
 	/**
 	 * Annotations to be copied.
 	 */
-	public Class<?>[] copiedAnnotations() default {
-
-			// Deprecation.
-			Deprecated.class,
-			// JSON serialization.
-			JsonView.class, SensitiveAttribute.class,
-			// OpenAPI.
-			Operation.class, Parameter.class, Parameters.class, Link.class, LinkParameter.class, Callback.class, RequestBody.class, ApiResponse.class,
-			ApiResponses.class
-
-	};
+	public Class<?>[] copiedAnnotations() default DtoAttribute.DEFAULT_COPIED_ANNOTATIONS;
 
 }

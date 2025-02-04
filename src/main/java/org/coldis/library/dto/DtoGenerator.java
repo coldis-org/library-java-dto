@@ -42,8 +42,6 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.coldis.library.helper.ReflectionHelper;
 import org.coldis.library.helper.TypeMirrorHelper;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 import jakarta.validation.constraints.NotNull;
 
 /**
@@ -176,7 +174,8 @@ public class DtoGenerator extends AbstractProcessor {
 			// DTOs in attribute hierarchy.TypeMirror
 			final Map<String, String> dtoTypesInAttrHier = DtoGenerator.getDtoTypesInHierarchy(attributeOriginalType, context, new HashMap<>());
 			// Copied annotations.
-			final List<String> copiedAnnotationsTypesNames = (dtoAttributeAnno == null ? List.of(JsonView.class.getName().toString())
+			final List<String> copiedAnnotationsTypesNames = (dtoAttributeAnno == null
+					? Arrays.stream(DtoAttribute.DEFAULT_COPIED_ANNOTATIONS).map(item -> item.getName().toString()).toList()
 					: TypeMirrorHelper.getAnnotationClassesAttribute(dtoAttributeAnno, "copiedAnnotations"));
 			final Set<String> copiedAnnotations = attributeGetter.getAnnotationMirrors().stream()
 					.filter(annotation -> copiedAnnotationsTypesNames
