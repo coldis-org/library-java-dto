@@ -81,6 +81,11 @@ public @interface DtoAttribute {
 	 * DTO attribute default value.
 	 */
 	public String defaultValue() default "";
+	
+	/**
+	 * DTO attribute default value from other attributes.
+	 */
+	public String[] valueFromOtherAttributes() default {};
 
 	/**
 	 * DTO attribute modifiers.

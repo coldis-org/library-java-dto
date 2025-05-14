@@ -2,6 +2,7 @@ package org.coldis.library.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +44,11 @@ public class DtoAttributeMetadata implements Serializable {
 	private String defaultValue;
 
 	/**
+	 * DTO attribute default value from other attributes.
+	 */
+	private String[] valueFromOtherAttributes;
+
+	/**
 	 * If attribute is required.
 	 */
 	private Boolean required;
@@ -82,6 +88,7 @@ public class DtoAttributeMetadata implements Serializable {
 			final String name,
 			final String description,
 			final String defaultValue,
+			final String[] valueFromOtherAttributes,
 			final Boolean required,
 			final Boolean readOnly,
 			final Boolean usedInComparison,
@@ -92,6 +99,7 @@ public class DtoAttributeMetadata implements Serializable {
 		this.name = name;
 		this.description = description;
 		this.defaultValue = defaultValue;
+		this.valueFromOtherAttributes = valueFromOtherAttributes;
 		this.required = required;
 		this.readOnly = readOnly;
 		this.usedInComparison = usedInComparison;
@@ -209,6 +217,35 @@ public class DtoAttributeMetadata implements Serializable {
 	}
 
 	/**
+	 * Gets the valueFromOtherAttributes.
+	 *
+	 * @return The valueFromOtherAttributes.
+	 */
+	public String[] getValueFromOtherAttributes() {
+		this.valueFromOtherAttributes = (this.valueFromOtherAttributes == null ? new String[] {} : this.valueFromOtherAttributes);
+		return this.valueFromOtherAttributes;
+	}
+
+	/**
+	 * Sets the valueFromOtherAttributes.
+	 *
+	 * @param valueFromOtherAttributes New valueFromOtherAttributes.
+	 */
+	public void setValueFromOtherAttributes(
+			final String[] valueFromOtherAttributes) {
+		this.valueFromOtherAttributes = valueFromOtherAttributes;
+	}
+	
+	/**
+	 * Checks if has value from other attributes.
+	 *
+	 * @return True, if has value from other attributes.
+	 */
+	public Boolean hasValueFromOtherAttributes() {
+		return (this.valueFromOtherAttributes != null && this.valueFromOtherAttributes.length > 0);
+	}
+
+	/**
 	 * Gets the required.
 	 *
 	 * @return The required.
@@ -289,8 +326,12 @@ public class DtoAttributeMetadata implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.annotations, this.defaultValue, this.description, this.modifiers, this.name, this.readOnly, this.required, this.type,
-				this.usedInComparison);
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + Arrays.hashCode(this.valueFromOtherAttributes);
+		result = (prime * result) + Objects.hash(this.annotations, this.defaultValue, this.description, this.modifiers, this.name, this.readOnly, this.required,
+				this.type, this.usedInComparison);
+		return result;
 	}
 
 	/**
@@ -302,14 +343,15 @@ public class DtoAttributeMetadata implements Serializable {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof DtoAttributeMetadata)) {
+		if ((obj == null) || (this.getClass() != obj.getClass())) {
 			return false;
 		}
 		final DtoAttributeMetadata other = (DtoAttributeMetadata) obj;
 		return Objects.equals(this.annotations, other.annotations) && Objects.equals(this.defaultValue, other.defaultValue)
 				&& Objects.equals(this.description, other.description) && Objects.equals(this.modifiers, other.modifiers)
 				&& Objects.equals(this.name, other.name) && Objects.equals(this.readOnly, other.readOnly) && Objects.equals(this.required, other.required)
-				&& Objects.equals(this.type, other.type) && Objects.equals(this.usedInComparison, other.usedInComparison);
+				&& Objects.equals(this.type, other.type) && Objects.equals(this.usedInComparison, other.usedInComparison)
+				&& Arrays.equals(this.valueFromOtherAttributes, other.valueFromOtherAttributes);
 	}
 
 }

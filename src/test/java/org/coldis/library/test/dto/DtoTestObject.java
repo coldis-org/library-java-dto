@@ -87,6 +87,16 @@ public class DtoTestObject implements Identifiable {
 	private Integer test10;
 
 	/**
+	 * Test attribute.
+	 */
+	private Integer test11;
+
+	/**
+	 * Test attribute.
+	 */
+	private Integer test12;
+
+	/**
 	 * @see org.coldis.library.model.Identifiable#getId()
 	 */
 	@Override
@@ -314,5 +324,44 @@ public class DtoTestObject implements Identifiable {
 			final Integer test10) {
 		this.test10 = test10;
 	}
+
+	/**
+	 * Gets the test11.
+	 * 
+	 * @return The test11.
+	 */
+	public Integer getTest11() {
+		return test11;
+	}
+
+	/**
+	 * Sets the test11.
+	 * 
+	 * @param test11 New test11.
+	 */
+	public void setTest11(
+			Integer test11) {
+		this.test11 = test11;
+	}
+
+	/**
+	 * Gets the test12.
+	 * @return The test12.
+	 */
+	@DtoAttribute(valueFromOtherAttributes = { "test9", "test11" }, usedInComparison = false)
+	public Integer getTest12() {
+		return test12;
+	}
+
+	/**
+	 * Sets the test12.
+	 * @param test12 New test12.
+	 */
+	public void setTest12(
+			Integer test12) {
+		this.test12 = test12;
+	}
+	
+	
 
 }

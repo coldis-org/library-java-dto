@@ -38,7 +38,7 @@ public class ${dto.name} implements Serializable {
 	 */
 	${attribute.annotations}
 	public#{if}(${attribute.modifiers.contains("static")}) static#{end} ${attribute.type} get${attribute.capitalizedName}() {
-		return ${attribute.name};
+		return #{if}(${attribute.hasValueFromOtherAttributes()}) #{foreach} (${otherAttribute} in ${attribute.valueFromOtherAttributes}) ${otherAttribute} != null ? ${otherAttribute} : #{end} null #{else} ${attribute.name} #{end};
 	}
 	
 #{if}(!${attribute.readOnly} && !${attribute.modifiers.contains("final")})	

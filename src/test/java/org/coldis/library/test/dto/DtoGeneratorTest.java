@@ -24,7 +24,7 @@ public class DtoGeneratorTest {
 			.withTest2(List.of(new DtoTestObject2Dto().withId(2L).withTest("test2"), new DtoTestObject2Dto().withId(3L).withTest("test3")))
 			.withTest4(Map.of("id", 4L, "test", "test4"))
 			.withTest6(new DtoTestObject2Dto[] { new DtoTestObject2Dto().withId(5L).withTest("test5"), new DtoTestObject2Dto().withId(6L).withTest("test6") })
-			.withTest7(7).withTest88(new int[] { 2, 3, 4 }).withTest9(9) };
+			.withTest7(7).withTest88(new int[] { 2, 3, 4 }).withTest9(9).withTest11(11) };
 
 	/**
 	 * Object mapper.
@@ -56,6 +56,11 @@ public class DtoGeneratorTest {
 			final DtoOrigin dtoOrigin = originalDto.getClass().getAnnotation(DtoOrigin.class);
 			Assertions.assertNotNull(dtoOrigin);
 			Assertions.assertEquals(originalObject.getClass().getName(), dtoOrigin.originalClassName());
+			
+			// Asserts attribute values are respected.
+			Assertions.assertEquals(reconvertedDto.getTest9(), reconvertedDto.getTest12());
+			reconvertedDto.setTest9(null);
+			Assertions.assertEquals(reconvertedDto.getTest11(), reconvertedDto.getTest12());			
 
 		}
 	}

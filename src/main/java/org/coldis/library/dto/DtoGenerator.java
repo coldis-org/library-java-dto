@@ -186,7 +186,7 @@ public class DtoGenerator extends AbstractProcessor {
 					.map(annotation -> annotation.toString()).collect(Collectors.toSet());
 			final String reducedCopiedAnnotations = copiedAnnotations.stream().reduce("", StringUtils::join);
 			// Gets the default attribute metadata.
-			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName, defaultAttrName, defaultAttrName, "", false, false,
+			dtoAttributeMetadata = new DtoAttributeMetadata(new ArrayList<>(), attributeOriginalTypeName, defaultAttrName, defaultAttrName, "", new String[] {}, false, false,
 					true, reducedCopiedAnnotations);
 			// If attribute is not required.
 			if (!dtoAttributeMetadata.getRequired()) {
@@ -208,11 +208,13 @@ public class DtoGenerator extends AbstractProcessor {
 				dtoAttributeMetadata
 						.setDescription(dtoAttributeAnno.description().isEmpty() ? dtoAttributeMetadata.getDescription() : dtoAttributeAnno.description());
 				dtoAttributeMetadata.setDefaultValue(dtoAttributeAnno.defaultValue());
+				dtoAttributeMetadata.setValueFromOtherAttributes(dtoAttributeAnno.valueFromOtherAttributes());
 				dtoAttributeMetadata
 						.setRequired(dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Bool.UNDEFINED ? dtoAttributeMetadata.getRequired()
 								: (dtoAttributeAnno.required() == org.coldis.library.dto.DtoAttribute.Bool.TRUE ? true : false));
 				dtoAttributeMetadata.setReadOnly(dtoAttributeAnno.readOnly());
 				dtoAttributeMetadata.setUsedInComparison(dtoAttributeAnno.usedInComparison());
+				
 			}
 			// For each other DTO in the hierarchy.
 			for (final Entry<String, String> dtoTypeInAttrHier : dtoTypesInAttrHier.entrySet()) {

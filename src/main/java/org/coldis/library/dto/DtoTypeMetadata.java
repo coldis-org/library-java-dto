@@ -62,6 +62,7 @@ public class DtoTypeMetadata implements Serializable {
 	 * Type attributes metadata.
 	 */
 	private List<DtoAttributeMetadata> attributes;
+	
 
 	/**
 	 * Default constructor.

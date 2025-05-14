@@ -71,6 +71,16 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	private java.lang.Integer test10;
 
+	/**
+	 * test11.
+	 */
+	private java.lang.Integer test11;
+
+	/**
+	 * test12.
+	 */
+	private java.lang.Integer test12;
+
 
 	/**
 	 * No arguments constructor.
@@ -85,7 +95,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public java.lang.Long getId() {
-		return id;
+		return  id ;
 	}
 	
 	/**
@@ -115,7 +125,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public org.coldis.library.test.dto.dto.DtoTestObject2Dto getTest1() {
-		return test1;
+		return  test1 ;
 	}
 	
 	/**
@@ -145,7 +155,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	@com.fasterxml.jackson.annotation.JsonView({org.coldis.library.test.dto.DtoTestObject.class})
 	public java.util.List<org.coldis.library.test.dto.dto.DtoTestObject2Dto> getTest2() {
-		return test2;
+		return  test2 ;
 	}
 	
 	/**
@@ -175,7 +185,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public java.lang.String getTest3() {
-		return test3;
+		return  test3 ;
 	}
 	
 	/**
@@ -205,7 +215,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public java.util.Map<String, Object> getTest4() {
-		return test4;
+		return  test4 ;
 	}
 	
 	/**
@@ -235,7 +245,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public static java.lang.String getTest5() {
-		return test5;
+		return  test5 ;
 	}
 	
 	/**
@@ -244,7 +254,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public org.coldis.library.test.dto.dto.DtoTestObject2Dto[] getTest6() {
-		return test6;
+		return  test6 ;
 	}
 	
 	/**
@@ -274,7 +284,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public int getTest7() {
-		return test7;
+		return  test7 ;
 	}
 	
 	/**
@@ -304,7 +314,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public int[] getTest88() {
-		return test88;
+		return  test88 ;
 	}
 	
 	/**
@@ -334,7 +344,7 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public java.lang.Integer getTest9() {
-		return test9;
+		return  test9 ;
 	}
 	
 	/**
@@ -364,9 +374,69 @@ public class DtoTestObjectDto implements Serializable {
 	 */
 	
 	public java.lang.Integer getTest10() {
-		return test10;
+		return  test10 ;
 	}
 	
+	/**
+	 * Gets the test11.
+	 * @return The test11.
+	 */
+	
+	public java.lang.Integer getTest11() {
+		return  test11 ;
+	}
+	
+	/**
+	 * Sets the test11.
+	 *
+	 * @param test11
+	 *            The test11.
+	 */
+	public void setTest11(final java.lang.Integer test11) {
+		this.test11 = test11;
+	}
+	
+	/**
+	 * Sets the test11 and returns the updated object.
+	 *
+	 * @param test11
+	 *            The test11.
+	 * @return The updated object.
+	 */
+	public DtoTestObjectDto withTest11(final java.lang.Integer test11) {
+		this.setTest11(test11);
+		return this;
+	}
+	/**
+	 * Gets the test12.
+	 * @return The test12.
+	 */
+	
+	public java.lang.Integer getTest12() {
+		return   test9 != null ? test9 :  test11 != null ? test11 :  null ;
+	}
+	
+	/**
+	 * Sets the test12.
+	 *
+	 * @param test12
+	 *            The test12.
+	 */
+	public void setTest12(final java.lang.Integer test12) {
+		this.test12 = test12;
+	}
+	
+	/**
+	 * Sets the test12 and returns the updated object.
+	 *
+	 * @param test12
+	 *            The test12.
+	 * @return The updated object.
+	 */
+	public DtoTestObjectDto withTest12(final java.lang.Integer test12) {
+		this.setTest12(test12);
+		return this;
+	}
 
 	/**
 	 * @see java.lang.Object#hashCode()
@@ -401,6 +471,10 @@ test7
 
 ,
 test10
+
+,
+test11
+
 
 
 
@@ -453,6 +527,9 @@ test10
 			return false;
 		}
 		if (! Objects.equals(test10, other.test10)) {
+			return false;
+		}
+		if (! Objects.equals(test11, other.test11)) {
 			return false;
 		}
 		return true;
