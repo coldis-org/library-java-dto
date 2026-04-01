@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>org.coldis.library</groupId>
 			<artifactId>test</artifactId>
-			<version>2.0.74</version>			<scope>test</scope>
+			<version>2.0.83</version>			<scope>test</scope>
 		</dependency>
 
 		<dependency>
