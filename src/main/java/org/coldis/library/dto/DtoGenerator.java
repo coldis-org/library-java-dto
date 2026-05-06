@@ -279,6 +279,16 @@ public class DtoGenerator extends AbstractProcessor {
 			final Boolean alsoGetAttributesMetadata) {
 		// Gets the default type metadata.
 		final DtoTypeMetadata dtoTypeMetadata = new DtoTypeMetadata(originalType.getQualifiedName().toString(), dtoTypeAnno);
+		// Honors @DtoType.dtoClass / dtoClassName: when the Model already has a hand-written DTO,
+		// skip generation and just record the mapping so child DTOs and runtime helpers can pair
+		// the Model with the existing class.
+		final String declaredDtoFromClass = TypeMirrorHelper.getAnnotationClassAttribute(dtoTypeAnno, "dtoClass");
+		final String declaredDtoFromName = StringUtils.trimToNull(dtoTypeAnno.dtoClassName());
+		final String declaredDto = ((declaredDtoFromClass != null) && !void.class.getName().equals(declaredDtoFromClass)) ? declaredDtoFromClass
+				: declaredDtoFromName;
+		if (declaredDto != null) {
+			dtoTypeMetadata.setDeclaredDtoQualifiedName(declaredDto);
+		}
 		// Detects whether the original type's superclass also has a matching @DtoType so the
 		// generated DTO can mirror the Model's class hierarchy (parallel inheritance). When
 		// detected, only THIS class's enclosed getters are collected; parent attributes come from
@@ -289,8 +299,21 @@ public class DtoGenerator extends AbstractProcessor {
 		final DtoType parentDtoTypeAnno = (parentClass == null) ? null : DtoGenerator.getDtoTypeAnno(parentClass, dtoTypeAnno.context());
 		final boolean mirrorHierarchy = (parentDtoTypeAnno != null) && Objects.equals(parentDtoTypeAnno.fileExtension(), dtoTypeAnno.fileExtension());
 		if (mirrorHierarchy) {
-			final DtoTypeMetadata parentMetadata = new DtoTypeMetadata(parentClass.getQualifiedName().toString(), parentDtoTypeAnno);
-			dtoTypeMetadata.setParentDtoQualifiedName(parentMetadata.getQualifiedName());
+			// If the parent declares an existing DTO class, child extends that directly. Otherwise
+			// we infer the parent DTO's qualified name from the parent's @DtoType (the legacy
+			// behavior).
+			final String parentDeclaredFromClass = TypeMirrorHelper.getAnnotationClassAttribute(parentDtoTypeAnno, "dtoClass");
+			final String parentDeclaredFromName = StringUtils.trimToNull(parentDtoTypeAnno.dtoClassName());
+			final String parentDeclaredDto = ((parentDeclaredFromClass != null) && !void.class.getName().equals(parentDeclaredFromClass))
+					? parentDeclaredFromClass
+					: parentDeclaredFromName;
+			if (parentDeclaredDto != null) {
+				dtoTypeMetadata.setParentDtoQualifiedName(parentDeclaredDto);
+			}
+			else {
+				final DtoTypeMetadata parentMetadata = new DtoTypeMetadata(parentClass.getQualifiedName().toString(), parentDtoTypeAnno);
+				dtoTypeMetadata.setParentDtoQualifiedName(parentMetadata.getQualifiedName());
+			}
 		}
 		// Resolves the list of candidate interfaces declared on the annotation (or the coldis
 		// defaults when the sentinel is in place), then intersects it with the interfaces the
@@ -457,6 +480,14 @@ public class DtoGenerator extends AbstractProcessor {
 		try {
 			// Gets the DTO metadata.
 			final DtoTypeMetadata dtoTypeMetadata = DtoGenerator.getDtoTypeMetadata(originalType, dtoMetadata, true);
+			// When an explicit DTO class is declared via @DtoType.dtoClass / dtoClassName, the
+			// caller is reusing an existing hand-written class — emit nothing, the mapping is
+			// just recorded for children + runtime tooling.
+			if (dtoTypeMetadata.isHasDeclaredDto()) {
+				DtoGenerator.LOGGER.fine("Skipping DTO emission for " + originalType.getQualifiedName()
+						+ " — declared DTO is " + dtoTypeMetadata.getDeclaredDtoQualifiedName() + ".");
+				return;
+			}
 			// Generates the classes.
 			DtoGenerator.LOGGER.fine("Generating DTO " + dtoTypeMetadata.getName() + ".");
 			this.generateDto(originalType, dtoTypeMetadata);

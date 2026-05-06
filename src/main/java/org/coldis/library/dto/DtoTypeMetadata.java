@@ -75,6 +75,14 @@ public class DtoTypeMetadata implements Serializable {
 	 * implement, copied from {@link DtoType#interfaces()}. Empty when none.
 	 */
 	private List<String> implementedInterfaceNames;
+
+	/**
+	 * Set when the {@link DtoType} declares an explicit existing DTO class
+	 * (via {@link DtoType#dtoClass()} or {@link DtoType#dtoClassName()}).
+	 * The generator skips DTO file emission for this Model and downstream
+	 * tooling treats this class as the Model's DTO equivalent.
+	 */
+	private String declaredDtoQualifiedName;
 	
 
 	/**
@@ -364,6 +372,36 @@ public class DtoTypeMetadata implements Serializable {
 	 */
 	public String getImplementsClause() {
 		return String.join(", ", this.getImplementedInterfaceNames());
+	}
+
+	/**
+	 * Gets the declared DTO qualified name (from {@link DtoType#dtoClass()} or
+	 * {@link DtoType#dtoClassName()}). When set, no DTO is generated.
+	 *
+	 * @return The declared DTO qualified name.
+	 */
+	public String getDeclaredDtoQualifiedName() {
+		return this.declaredDtoQualifiedName;
+	}
+
+	/**
+	 * Sets the declared DTO qualified name.
+	 *
+	 * @param declaredDtoQualifiedName New declared DTO qualified name.
+	 */
+	public void setDeclaredDtoQualifiedName(
+			final String declaredDtoQualifiedName) {
+		this.declaredDtoQualifiedName = declaredDtoQualifiedName;
+	}
+
+	/**
+	 * Indicates whether this Model uses an explicitly declared (existing) DTO
+	 * class instead of asking the generator to emit one.
+	 *
+	 * @return True when an explicit DTO class is declared.
+	 */
+	public boolean isHasDeclaredDto() {
+		return StringUtils.isNotBlank(this.declaredDtoQualifiedName);
 	}
 
 	/**

@@ -71,4 +71,26 @@ public @interface DtoType {
 	 */
 	public Class<?>[] interfaces() default void.class;
 
+	/**
+	 * Declares an existing class as the DTO equivalent of this Model. When set
+	 * to anything other than the {@code void.class} sentinel, the generator
+	 * skips DTO emission for this type and downstream tooling (Fory canonical
+	 * registration, child DTO {@code extends}) treats the named class as the
+	 * Model's DTO. Useful when the DTO already exists in a shared library and
+	 * doesn't need to be regenerated.
+	 *
+	 * <p>Prefer this over {@link DtoOrigin} on the DTO side — it lets the Model
+	 * (which is the source of truth) carry the mapping, and works for
+	 * hand-written DTOs without modifying their source.
+	 */
+	public Class<?> dtoClass() default void.class;
+
+	/**
+	 * Like {@link #dtoClass()} but accepts the DTO class name as a string. Use
+	 * when the DTO class isn't on the Model's compile classpath (annotations
+	 * can't reference unloaded classes via {@code Class<?>}). When both are
+	 * set, {@link #dtoClass()} wins.
+	 */
+	public String dtoClassName() default "";
+
 }
