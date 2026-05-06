@@ -7,10 +7,13 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -276,11 +279,61 @@ public class DtoGenerator extends AbstractProcessor {
 			final Boolean alsoGetAttributesMetadata) {
 		// Gets the default type metadata.
 		final DtoTypeMetadata dtoTypeMetadata = new DtoTypeMetadata(originalType.getQualifiedName().toString(), dtoTypeAnno);
+		// Detects whether the original type's superclass also has a matching @DtoType so the
+		// generated DTO can mirror the Model's class hierarchy (parallel inheritance). When
+		// detected, only THIS class's enclosed getters are collected; parent attributes come from
+		// the parent DTO via super.
+		final TypeElement parentClass = (originalType.getSuperclass() instanceof DeclaredType)
+				? (TypeElement) ((DeclaredType) originalType.getSuperclass()).asElement()
+				: null;
+		final DtoType parentDtoTypeAnno = (parentClass == null) ? null : DtoGenerator.getDtoTypeAnno(parentClass, dtoTypeAnno.context());
+		final boolean mirrorHierarchy = (parentDtoTypeAnno != null) && Objects.equals(parentDtoTypeAnno.fileExtension(), dtoTypeAnno.fileExtension());
+		if (mirrorHierarchy) {
+			final DtoTypeMetadata parentMetadata = new DtoTypeMetadata(parentClass.getQualifiedName().toString(), parentDtoTypeAnno);
+			dtoTypeMetadata.setParentDtoQualifiedName(parentMetadata.getQualifiedName());
+		}
+		// Resolves the list of candidate interfaces declared on the annotation (or the coldis
+		// defaults when the sentinel is in place), then intersects it with the interfaces the
+		// Model actually implements. Anything declared but not fulfilled by the Model is dropped
+		// so the generated DTO never claims to implement something it cannot.
+		final List<String> declaredInterfaces = TypeMirrorHelper.getAnnotationClassesAttribute(dtoTypeAnno, "interfaces");
+		final List<String> candidateInterfaces;
+		if ((declaredInterfaces == null) || CollectionUtils.isEqualCollection(declaredInterfaces, List.of(void.class.getName()))) {
+			candidateInterfaces = Arrays.stream(DtoType.DEFAULT_INTERFACES).map(Class::getName).toList();
+		}
+		else {
+			candidateInterfaces = declaredInterfaces;
+		}
+		if (!candidateInterfaces.isEmpty()) {
+			// When mirroring the parent hierarchy, only emit interfaces that this class itself
+			// (or its non-DTO ancestors) introduces — anything implemented by the parent Model is
+			// already on the parent DTO and re-declaring it would be redundant. Without mirroring,
+			// the DTO is flat, so every reachable interface from the Model graph is fair game.
+			final Set<String> originalInterfaces;
+			if (mirrorHierarchy) {
+				originalInterfaces = new HashSet<>();
+				for (final TypeMirror declaredInterface : originalType.getInterfaces()) {
+					if (declaredInterface instanceof DeclaredType) {
+						final TypeElement interfaceElement = (TypeElement) ((DeclaredType) declaredInterface).asElement();
+						originalInterfaces.add(interfaceElement.getQualifiedName().toString());
+						originalInterfaces.addAll(DtoGenerator.collectAllInterfaceNames(interfaceElement, new HashSet<>()));
+					}
+				}
+			}
+			else {
+				originalInterfaces = DtoGenerator.collectAllInterfaceNames(originalType, new HashSet<>());
+			}
+			final List<String> applicableInterfaces = candidateInterfaces.stream().filter(originalInterfaces::contains).toList();
+			if (!applicableInterfaces.isEmpty()) {
+				dtoTypeMetadata.setImplementedInterfaceNames(new ArrayList<>(applicableInterfaces));
+			}
+		}
 		// If attributes metadata should also be retrieved.
 		if (alsoGetAttributesMetadata) {
 			// Attributes of DTO.
 			final List<String> alreadyAddedAttributes = new ArrayList<>();
-			// Current type. Initially the given one, an then its super types.
+			// Current type. Initially the given one, an then its super types (unless we mirror the
+			// hierarchy, in which case the parent's attributes belong to the parent DTO).
 			TypeElement currentClass = originalType;
 			// For each type in the hierarchy.
 			while ((currentClass != null) && !(currentClass instanceof NoType)) {
@@ -310,6 +363,12 @@ public class DtoGenerator extends AbstractProcessor {
 						}
 					}
 				}
+				// When mirroring the parent DTO, stop after this class — parent attributes will be
+				// inherited from the parent DTO. Otherwise walk the whole hierarchy (legacy flat
+				// behavior, preserved for backward compatibility).
+				if (mirrorHierarchy) {
+					break;
+				}
 				// The current class is the late class superclass.
 				currentClass = currentClass.getSuperclass() instanceof DeclaredType ? (TypeElement) ((DeclaredType) currentClass.getSuperclass()).asElement()
 						: null;
@@ -317,6 +376,36 @@ public class DtoGenerator extends AbstractProcessor {
 		}
 		// Returns the type metadata.
 		return dtoTypeMetadata;
+	}
+
+	/**
+	 * Recursively collects the qualified names of every interface implemented (directly or
+	 * transitively) by the given type and its superclasses. Used to validate that interfaces
+	 * declared in {@link DtoType#interfaces()} are actually fulfilled by the Model.
+	 *
+	 * @param  type    Type to inspect.
+	 * @param  visited Accumulator preventing infinite loops on circular type graphs.
+	 * @return         Qualified names of all reachable interfaces.
+	 */
+	private static Set<String> collectAllInterfaceNames(
+			final TypeElement type,
+			final Set<String> visited) {
+		if ((type == null) || !visited.add(type.getQualifiedName().toString())) {
+			return Collections.emptySet();
+		}
+		final Set<String> interfaceNames = new HashSet<>();
+		for (final TypeMirror declaredInterface : type.getInterfaces()) {
+			if (declaredInterface instanceof DeclaredType) {
+				final TypeElement interfaceElement = (TypeElement) ((DeclaredType) declaredInterface).asElement();
+				interfaceNames.add(interfaceElement.getQualifiedName().toString());
+				interfaceNames.addAll(DtoGenerator.collectAllInterfaceNames(interfaceElement, visited));
+			}
+		}
+		if (type.getSuperclass() instanceof DeclaredType) {
+			final TypeElement superElement = (TypeElement) ((DeclaredType) type.getSuperclass()).asElement();
+			interfaceNames.addAll(DtoGenerator.collectAllInterfaceNames(superElement, visited));
+		}
+		return interfaceNames;
 	}
 
 	/**

@@ -9,7 +9,7 @@ import org.coldis.library.dto.DtoOrigin;
  * ${dto.description}.
  */
 @DtoOrigin(originalClassName = "${dto.originalClassName}")
-public class ${dto.name} implements Serializable {
+public class ${dto.name} #{if}(${dto.hasParentDto})extends ${dto.parentDtoQualifiedName}#{if}(${dto.hasInterfaces}) implements ${dto.implementsClause}#{end}#{else}implements Serializable#{if}(${dto.hasInterfaces}), ${dto.implementsClause}#{end}#{end} {
 
 	/**
 	 * Serial.
@@ -72,7 +72,7 @@ public class ${dto.name} implements Serializable {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = #{if}(${dto.hasParentDto})super.hashCode()#{else}1#{end};
 		result = prime * result + Objects.hash(
 				#{set}($currentItemIdx = 0)#{foreach}(${attribute} in ${dto.attributes})#{if}(${attribute.usedInComparison} && !${attribute.type.endsWith("[]")})
 #{if}(${currentItemIdx} > 0),
@@ -95,12 +95,18 @@ public class ${dto.name} implements Serializable {
 		if (this == obj) {
 			return true;
 		}
+#{if}(${dto.hasParentDto})
+		if (!super.equals(obj)) {
+			return false;
+		}
+#{else}
 		if (obj == null) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+#{end}
 		final ${dto.name} other = (${dto.name}) obj;
 #{foreach}(${attribute} in ${dto.attributes})#{if}(${attribute.usedInComparison})
 		if (!#{if}(${attribute.type.endsWith("[]")}) Arrays#{else} Objects#{end}.equals(${attribute.name}, other.${attribute.name})) {

@@ -62,6 +62,19 @@ public class DtoTypeMetadata implements Serializable {
 	 * Type attributes metadata.
 	 */
 	private List<DtoAttributeMetadata> attributes;
+
+	/**
+	 * Fully-qualified name of the parent DTO when the original type's superclass
+	 * is also annotated with a matching {@link DtoType}. {@code null} otherwise,
+	 * which preserves the legacy flat (no-parent) behavior.
+	 */
+	private String parentDtoQualifiedName;
+
+	/**
+	 * Fully-qualified names of additional interfaces the generated DTO should
+	 * implement, copied from {@link DtoType#interfaces()}. Empty when none.
+	 */
+	private List<String> implementedInterfaceNames;
 	
 
 	/**
@@ -282,6 +295,75 @@ public class DtoTypeMetadata implements Serializable {
 	public void setAttributes(
 			final List<DtoAttributeMetadata> attributes) {
 		this.attributes = attributes;
+	}
+
+	/**
+	 * Gets the parent DTO qualified name (or {@code null} when no parent DTO).
+	 *
+	 * @return The parent DTO qualified name.
+	 */
+	public String getParentDtoQualifiedName() {
+		return this.parentDtoQualifiedName;
+	}
+
+	/**
+	 * Sets the parent DTO qualified name.
+	 *
+	 * @param parentDtoQualifiedName New parent DTO qualified name.
+	 */
+	public void setParentDtoQualifiedName(
+			final String parentDtoQualifiedName) {
+		this.parentDtoQualifiedName = parentDtoQualifiedName;
+	}
+
+	/**
+	 * Indicates whether this DTO has a parent DTO.
+	 *
+	 * @return True if a parent DTO is configured.
+	 */
+	public boolean isHasParentDto() {
+		return StringUtils.isNotBlank(this.parentDtoQualifiedName);
+	}
+
+	/**
+	 * Gets the implemented interface qualified names.
+	 *
+	 * @return The implemented interface qualified names.
+	 */
+	public List<String> getImplementedInterfaceNames() {
+		if (this.implementedInterfaceNames == null) {
+			this.implementedInterfaceNames = new ArrayList<>();
+		}
+		return this.implementedInterfaceNames;
+	}
+
+	/**
+	 * Sets the implemented interface qualified names.
+	 *
+	 * @param implementedInterfaceNames New implemented interface qualified names.
+	 */
+	public void setImplementedInterfaceNames(
+			final List<String> implementedInterfaceNames) {
+		this.implementedInterfaceNames = implementedInterfaceNames;
+	}
+
+	/**
+	 * Indicates whether this DTO declares any additional interfaces.
+	 *
+	 * @return True when at least one interface is configured.
+	 */
+	public boolean isHasInterfaces() {
+		return (this.implementedInterfaceNames != null) && !this.implementedInterfaceNames.isEmpty();
+	}
+
+	/**
+	 * Returns the {@code implements} clause body — comma-separated interface
+	 * qualified names — for use in the template's class declaration.
+	 *
+	 * @return The interface list as a single comma-separated string.
+	 */
+	public String getImplementsClause() {
+		return String.join(", ", this.getImplementedInterfaceNames());
 	}
 
 	/**

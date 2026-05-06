@@ -65,4 +65,39 @@ public class DtoGeneratorTest {
 		}
 	}
 
+	/**
+	 * Verifies hierarchical DTO generation: when the Model's superclass is also annotated with
+	 * {@link org.coldis.library.dto.DtoType}, the generator should emit a parallel inheritance
+	 * structure on the DTO side, and round-trips should preserve fields from both layers.
+	 */
+	@Test
+	public void testHierarchicalDtoGeneration() throws Exception {
+		Assertions.assertEquals(org.coldis.library.test.dto.dto.HierarchyParentModelDto.class,
+				org.coldis.library.test.dto.dto.HierarchyChildModelDto.class.getSuperclass(),
+				"Child DTO should extend parent DTO when both Models carry @DtoType");
+
+		final org.coldis.library.test.dto.dto.HierarchyChildModelDto childDto = new org.coldis.library.test.dto.dto.HierarchyChildModelDto();
+		childDto.setId(42L);
+		childDto.setParentField("from-parent");
+		childDto.setChildField("from-child");
+
+		final HierarchyChildModel childModel = this.objectMapper.convertValue(childDto, HierarchyChildModel.class);
+		Assertions.assertEquals(42L, childModel.getId());
+		Assertions.assertEquals("from-parent", childModel.getParentField());
+		Assertions.assertEquals("from-child", childModel.getChildField());
+
+		final org.coldis.library.test.dto.dto.HierarchyChildModelDto roundTripped = this.objectMapper
+				.convertValue(childModel, org.coldis.library.test.dto.dto.HierarchyChildModelDto.class);
+		Assertions.assertEquals(childDto, roundTripped);
+
+		// Interface forwarding: parent Model implements Identifiable, child adds Nameable. The
+		// generator's default-interface intersection should mirror both onto the DTO side.
+		Assertions.assertTrue(org.coldis.library.model.Identifiable.class.isAssignableFrom(org.coldis.library.test.dto.dto.HierarchyParentModelDto.class),
+				"Parent DTO should implement Identifiable when the parent Model does");
+		Assertions.assertTrue(org.coldis.library.model.Nameable.class.isAssignableFrom(org.coldis.library.test.dto.dto.HierarchyChildModelDto.class),
+				"Child DTO should implement Nameable when the child Model adds it");
+		Assertions.assertTrue(org.coldis.library.model.Identifiable.class.isAssignableFrom(org.coldis.library.test.dto.dto.HierarchyChildModelDto.class),
+				"Child DTO should inherit Identifiable through the parent DTO");
+	}
+
 }

@@ -6,15 +6,15 @@ import java.util.Arrays;
 import org.coldis.library.dto.DtoOrigin;
 
 /**
- * DtoTestObject2Dto.
+ * HierarchyParentModelDto.
  */
-@DtoOrigin(originalClassName = "org.coldis.library.test.dto.DtoTestObject2")
-public class DtoTestObject2Dto implements Serializable, org.coldis.library.model.Identifiable {
+@DtoOrigin(originalClassName = "org.coldis.library.test.dto.HierarchyParentModel")
+public class HierarchyParentModelDto implements Serializable, org.coldis.library.model.Identifiable {
 
 	/**
 	 * Serial.
 	 */
-	private static final long serialVersionUID = 1922639325L;
+	private static final long serialVersionUID = 322219573L;
 	
 	/**
 	 * id.
@@ -22,15 +22,15 @@ public class DtoTestObject2Dto implements Serializable, org.coldis.library.model
 	private java.lang.Long id;
 
 	/**
-	 * test.
+	 * parentField.
 	 */
-	private java.lang.String test;
+	private java.lang.String parentField;
 
 
 	/**
 	 * No arguments constructor.
 	 */
-	public DtoTestObject2Dto() {
+	public HierarchyParentModelDto() {
 		super();
 	}
 
@@ -60,38 +60,38 @@ public class DtoTestObject2Dto implements Serializable, org.coldis.library.model
 	 *            The id.
 	 * @return The updated object.
 	 */
-	public DtoTestObject2Dto withId(final java.lang.Long id) {
+	public HierarchyParentModelDto withId(final java.lang.Long id) {
 		this.setId(id);
 		return this;
 	}
 	/**
-	 * Gets the test.
-	 * @return The test.
+	 * Gets the parentField.
+	 * @return The parentField.
 	 */
 	
-	public java.lang.String getTest() {
-		return  test ;
+	public java.lang.String getParentField() {
+		return  parentField ;
 	}
 	
 	/**
-	 * Sets the test.
+	 * Sets the parentField.
 	 *
-	 * @param test
-	 *            The test.
+	 * @param parentField
+	 *            The parentField.
 	 */
-	public void setTest(final java.lang.String test) {
-		this.test = test;
+	public void setParentField(final java.lang.String parentField) {
+		this.parentField = parentField;
 	}
 	
 	/**
-	 * Sets the test and returns the updated object.
+	 * Sets the parentField and returns the updated object.
 	 *
-	 * @param test
-	 *            The test.
+	 * @param parentField
+	 *            The parentField.
 	 * @return The updated object.
 	 */
-	public DtoTestObject2Dto withTest(final java.lang.String test) {
-		this.setTest(test);
+	public HierarchyParentModelDto withParentField(final java.lang.String parentField) {
+		this.setParentField(parentField);
 		return this;
 	}
 
@@ -106,7 +106,7 @@ public class DtoTestObject2Dto implements Serializable, org.coldis.library.model
 id
 
 ,
-test
+parentField
 
 
 
@@ -128,11 +128,11 @@ test
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final DtoTestObject2Dto other = (DtoTestObject2Dto) obj;
+		final HierarchyParentModelDto other = (HierarchyParentModelDto) obj;
 		if (! Objects.equals(id, other.id)) {
 			return false;
 		}
-		if (! Objects.equals(test, other.test)) {
+		if (! Objects.equals(parentField, other.parentField)) {
 			return false;
 		}
 		return true;
