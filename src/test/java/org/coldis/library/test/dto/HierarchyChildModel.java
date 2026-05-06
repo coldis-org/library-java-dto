@@ -11,7 +11,8 @@ import org.coldis.library.model.Nameable;
  */
 @DtoType(
 		targetPath = "src/test/java",
-		namespace = "org.coldis.library.test.dto.dto"
+		namespace = "org.coldis.library.test.dto.dto",
+		interfaces = { Nameable.class }
 )
 public class HierarchyChildModel extends HierarchyParentModel implements Nameable {
 

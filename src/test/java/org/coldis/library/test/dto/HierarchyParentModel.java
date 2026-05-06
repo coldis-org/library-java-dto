@@ -11,7 +11,8 @@ import org.coldis.library.model.Identifiable;
  */
 @DtoType(
 		targetPath = "src/test/java",
-		namespace = "org.coldis.library.test.dto.dto"
+		namespace = "org.coldis.library.test.dto.dto",
+		interfaces = { Identifiable.class }
 )
 public class HierarchyParentModel implements Identifiable {
 

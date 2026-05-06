@@ -9,7 +9,7 @@ import org.coldis.library.dto.DtoOrigin;
  * DtoTestObject2Dto.
  */
 @DtoOrigin(originalClassName = "org.coldis.library.test.dto.DtoTestObject2")
-public class DtoTestObject2Dto implements Serializable, org.coldis.library.model.Identifiable {
+public class DtoTestObject2Dto implements Serializable {
 
 	/**
 	 * Serial.
